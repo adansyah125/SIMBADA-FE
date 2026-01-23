@@ -1,0 +1,26 @@
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .print-hidden {
+    display: none !important;
+  }
+
+  .print-area {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 10mm;
+  }
+
+  .label-item {
+    break-inside: avoid;
+  }
+
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+}
