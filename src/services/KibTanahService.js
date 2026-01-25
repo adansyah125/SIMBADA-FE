@@ -6,18 +6,7 @@ export const getKibTanah = async () => {
 };
 
 export const createKibTanah = async (payload) => {
-  const formData = new FormData();
-
-  // Konversi object ke FormData secara otomatis
-  Object.entries(payload).forEach(([key, value]) => {
-    if (value !== null && value !== undefined) {
-      formData.append(key, value);
-    }
-  });
-
-  const res = await api.post("/kib-tanah", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const res = await api.post("/kib-tanah", payload);
 
   return res.data.data;
 };
@@ -27,31 +16,7 @@ export const getTanahById = async (id) => {
 };
 
 export const updateKibTanah = async (id, payload) => {
-  const formData = new FormData();
-
-  Object.entries(payload).forEach(([key, value]) => {
-    if (key === "gambar") {
-      // HANYA masukkan jika user memilih FILE BARU
-      if (value instanceof File) {
-        formData.append(key, value);
-      }
-      // Jika 'value' adalah string (path lama), ABAIKAN.
-      // Jangan di-append agar Laravel tidak memvalidasi field ini.
-    } else {
-      // Masukkan field lainnya (kode_barang, nama_barang, dll)
-      if (value !== null && value !== undefined) {
-        formData.append(key, value);
-      }
-    }
-  });
-
-  // WAJIB: Agar Laravel mengenali ini sebagai request PUT meskipun dikirim via POST
-  formData.append("_method", "PUT");
-
-  const res = await api.post(`/kib-tanah/${id}`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-
+  const res = await api.put(`/kib-tanah/${id}`, payload);
   return res.data.data;
 };
 

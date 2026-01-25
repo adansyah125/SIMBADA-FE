@@ -1,19 +1,47 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { getKirById, updateKir } from "../../services/KirService";
+import { toast } from "react-toastify";
 
 function EditKir() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [oldImage, setOldImage] = useState({});
+  const [previewImage, setPreviewImage] = useState(null);
+  const [fileError, setFileError] = useState("");
+
+    const handleFileChange = (file) => {
+  const maxSize = 5120 * 1024; // 5MB dalam Bytes
+
+  if (file) {
+    if (file.size > maxSize) {
+      setFileError("Gambar terlalu besar, maksimal 5MB");
+      // Reset form dan preview agar tidak mengirim file yang salah
+      setForm({ ...form, gambar: null });
+      setPreviewImage(null);
+      document.getElementById("fileUpload").value = ""; 
+      return;
+    }
+
+    // Jika lolos validasi, hapus pesan error
+    setFileError("");
+    setForm({ ...form, gambar: file });
+    
+    // Bersihkan memori URL lama jika ada
+    if (previewImage) URL.revokeObjectURL(previewImage);
+    setPreviewImage(URL.createObjectURL(file));
+  }
+};
 
   const [form, setForm] = useState({
     nama_barang: "",
     kode_barang: "",
-    tahun: "",
+    tanggal_perolehan: "",
     lokasi: "",
     kondisi: "baik",
     jumlah: "",
     nilai_perolehan: "",
+    gambar: null,
   });
 
   const [qr, setQr] = useState(null);
@@ -23,12 +51,14 @@ function EditKir() {
       setForm({
         nama_barang: res.nama_barang,
         kode_barang: res.kode_barang,
-        tahun: res.tahun,
+        tanggal_perolehan: res.tanggal_perolehan,
         lokasi: res.lokasi,
         kondisi: res.kondisi,
         jumlah: res.jumlah,
         nilai_perolehan: res.nilai_perolehan,
+        gambar: res.gambar,
       });
+      setOldImage(res.gambar); 
       setQr(res.gambar_qr);
     });
   }, [id]);
@@ -40,6 +70,7 @@ function EditKir() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await updateKir(id, form);
+    toast.success("Data KIR berhasil diperbarui");
     navigate("/kir");
   };
 
@@ -91,8 +122,8 @@ function EditKir() {
              <label className="block text-sm font-medium">Tahun</label>
           <input
             type="date"
-            name="tahun"
-            value={form.tahun}
+            name="tanggal_perolehan"
+            value={form.tanggal_perolehan}
             onChange={handleChange}
             className="mt-1 w-full border rounded-md p-2"
           />
@@ -144,6 +175,68 @@ function EditKir() {
           </select>
           </div>
         </div>
+         {/* GAMBAR */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Gambar</label>
+
+                {/* GAMBAR LAMA */}
+                {oldImage && !previewImage && (
+                    <img
+                    src={`http://localhost:8000/storage/${oldImage}`}
+                    alt="Gambar Lama"
+                    className="w-32 h-32 object-cover mb-3 rounded-md border"
+                    />
+                )}
+
+                {/* UPLOAD BOX */}
+                <div
+                    className="border-2 border-dashed border-gray-400 rounded-lg p-4 cursor-pointer 
+                            hover:border-blue-500 transition text-center"
+                    onClick={() => document.getElementById("fileUpload").click()}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                    e.preventDefault();
+                    const file = e.dataTransfer.files[0];
+                    if (file) {
+                        setForm({ ...form, gambar: file });
+                        setPreviewImage(URL.createObjectURL(file));
+                    }
+                    }}
+                >
+                    {/* PREVIEW GAMBAR BARU */}
+                    {previewImage ? (
+                    <img
+                        src={previewImage}
+                        alt="Preview Baru"
+                        className="mx-auto h-40 object-cover rounded-md"
+                    />
+                    ) : (
+                    <div className="text-gray-500">
+                        <p className="font-medium">Choose Image or Drag & Drop</p>
+                        <p className="text-sm">PNG, JPG, JPEG</p>
+                    </div>
+                    )}
+                </div>
+
+                {fileError && (
+                <p className="text-red-500 text-xs mt-1">{fileError}</p>
+                )}
+
+                    {/* INPUT FILE TERSEMBUNYI */}
+                    <input
+                        id="fileUpload"
+                        type="file"
+                        name="gambar"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                        const file = e.target.files[0];
+                        setForm({ ...form, gambar: file });
+                        setPreviewImage(URL.createObjectURL(file));
+                        handleFileChange(file);
+                        }}
+                    />
+                </div>
 
         {/* BUTTON */}
         <div className="flex gap-3">

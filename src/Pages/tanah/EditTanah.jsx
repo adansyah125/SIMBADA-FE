@@ -5,34 +5,6 @@ import { getTanahById,updateKibTanah } from "../../services/KibTanahService";
 function EditTanah() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [oldImage, setOldImage] = useState(null);
-  const [previewImage, setPreviewImage] = useState(null);
-
-  const [fileError, setFileError] = useState("");
-
-    const handleFileChange = (file) => {
-  const maxSize = 5120 * 1024; // 5MB dalam Bytes
-
-  if (file) {
-    if (file.size > maxSize) {
-      setFileError("Gambar terlalu besar, maksimal 5MB");
-      // Reset form dan preview agar tidak mengirim file yang salah
-      setForm({ ...form, gambar: null });
-      setPreviewImage(null);
-      document.getElementById("fileUpload").value = ""; 
-      return;
-    }
-
-    // Jika lolos validasi, hapus pesan error
-    setFileError("");
-    setForm({ ...form, gambar: file });
-    
-    // Bersihkan memori URL lama jika ada
-    if (previewImage) URL.revokeObjectURL(previewImage);
-    setPreviewImage(URL.createObjectURL(file));
-  }
-};
-
   const [form, setForm] = useState({
     kode_barang: "",
     nama_barang: "",
@@ -54,7 +26,6 @@ function EditTanah() {
     cara_perolehan:"",
     status_penggunaan:"",
     keterangan:"",
-    gambar:null,
   });
 
   const [loading, setLoading] = useState(true);
@@ -64,7 +35,6 @@ function EditTanah() {
     const fetchData = async () => {
       try {
         const response = await getTanahById(id);
-        setOldImage(response.data.gambar); 
         setForm({
         kode_barang: response.data?.kode_barang ?? "",
         nama_barang: response.data?.nama_barang ?? "",
@@ -86,7 +56,6 @@ function EditTanah() {
         cara_perolehan: response.data?.cara_perolehan ?? "",
         status_penggunaan: response.data?.status_penggunaan ?? "",
         keterangan: response.data?.keterangan ?? "",
-        gambar: response.data?.gambar ?? "",
         
       });
       } catch (error) {
@@ -122,11 +91,11 @@ function EditTanah() {
 
   if (loading) {
     return (
-      <div class="flex space-x-2 justify-center items-center h-screen">
-      <span class="sr-only">Loading...</span>
-      <div class="h-3 w-3 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-      <div class="h-3 w-3 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-      <div class="h-3 w-3 bg-blue-600 rounded-full animate-bounce"></div>
+      <div className="flex space-x-2 justify-center items-center h-screen">
+      <span className="sr-only">Loading...</span>
+      <div className="h-3 w-3 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+      <div className="h-3 w-3 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+      <div className="h-3 w-3 bg-blue-600 rounded-full animate-bounce"></div>
     </div>   
     )
   }
@@ -161,68 +130,7 @@ function EditTanah() {
           <Input type="text" label="status_penggunaan" name="status_penggunaan" value={form.status_penggunaan} onChange={handleChange} />
           {/* <Input type="text" label="keterangan" name="keterangan" value={form.keterangan} onChange={handleChange} /> */}
           <TextArea label="keterangan" name="keterangan" value={form.keterangan} onChange={handleChange} />
-           {/* GAMBAR */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Gambar</label>
-
-                {/* GAMBAR LAMA */}
-                {oldImage && !previewImage && (
-                    <img
-                    src={`http://localhost:8000/storage/${oldImage}`}
-                    alt="Gambar Lama"
-                    className="w-32 h-32 object-cover mb-3 rounded-md border"
-                    />
-                )}
-
-                {/* UPLOAD BOX */}
-                <div
-                    className="border-2 border-dashed border-gray-400 rounded-lg p-4 cursor-pointer 
-                            hover:border-blue-500 transition text-center"
-                    onClick={() => document.getElementById("fileUpload").click()}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={(e) => {
-                    e.preventDefault();
-                    const file = e.dataTransfer.files[0];
-                    if (file) {
-                        setForm({ ...form, gambar: file });
-                        setPreviewImage(URL.createObjectURL(file));
-                    }
-                    }}
-                >
-                    {/* PREVIEW GAMBAR BARU */}
-                    {previewImage ? (
-                    <img
-                        src={previewImage}
-                        alt="Preview Baru"
-                        className="mx-auto h-40 object-cover rounded-md"
-                    />
-                    ) : (
-                    <div className="text-gray-500">
-                        <p className="font-medium">Choose Image or Drag & Drop</p>
-                        <p className="text-sm">PNG, JPG, JPEG</p>
-                    </div>
-                    )}
-                </div>
-
-                {fileError && (
-                <p className="text-red-500 text-xs mt-1">{fileError}</p>
-                )}
-
-                    {/* INPUT FILE TERSEMBUNYI */}
-                    <input
-                        id="fileUpload"
-                        type="file"
-                        name="gambar"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                        const file = e.target.files[0];
-                        setForm({ ...form, gambar: file });
-                        setPreviewImage(URL.createObjectURL(file));
-                        handleFileChange(file);
-                        }}
-                    />
-                </div>
+           
 
         </div>
 

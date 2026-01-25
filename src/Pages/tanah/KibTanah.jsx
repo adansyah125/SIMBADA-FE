@@ -108,32 +108,22 @@ function KibTanah() {
                 <table className="min-w-full table-auto border-collapse">
                     <thead className="bg-gray-50 text-center text-xs font-semibold text-gray-700 uppercase border-b border-gray-300 sticky top-0">
                         <tr>
-                            <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">No</th>
-                            <th rowSpan="2" className="border-r border-gray-200 px-3 py-3 bg-indigo-50 text-indigo-700">Kode Barang</th>
-                            <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Nama</th>
-                            <th rowSpan="2" className="border-r border-gray-200 px-3 py-3 w-40">NIBAR</th>
-                            <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Nomor Register</th>
-                            <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Spesifikasi</th>
-                            <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Spesifikasi Lainnya</th>
-                            <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Jumlah</th>
-                            <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Satuan</th>
-                            <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Titik Koordinat</th>
-                            <th className="border-r border-gray-200 px-3 py-3" colSpan="4">Bukti Kepemilikan</th>
-                            <th rowSpan="2" className="px-3 py-3 bg-gray-100">Harga Satuan</th>
-                            <th rowSpan="2" className="px-3 py-3 bg-gray-100">Nilai Perolehan</th>
-                            <th rowSpan="2" className="px-3 py-3 bg-gray-100">Tanggal Perolehan</th>
-                            <th rowSpan="2" className="px-3 py-3 bg-gray-100">Cara Perolehan</th>
-                            <th rowSpan="2" className="px-3 py-3 bg-gray-100">status Penggunaan</th>
-                            <th rowSpan="2" className="px-3 py-3 bg-gray-100">Keterangan</th>
-                            <th rowSpan="2" className="px-3 py-3 bg-gray-100">IMAGE</th>
-                            <th rowSpan="2" className="px-3 py-3 bg-gray-100">Aksi</th>
+                            <th rowSpan="2" className="border border-gray-300 px-1 py-1">No</th>
+                            <th rowSpan="2" className="border border-gray-300 px-1 py-1 bg-indigo-50 text-indigo-700">Kode Barang</th>
+                            <th rowSpan="2" className="border border-gray-300 px-1 py-1">Nama</th>
+                            <th className="border border-gray-300 px-1 py-1" colSpan="4">Bukti Kepemilikan</th>
+                            <th rowSpan="2" className="px-1 py-1 border border-gray-300">Harga Satuan</th>
+                            <th rowSpan="2" className="px-1 py-1 border border-gray-300">Nilai Perolehan</th>
+                            <th rowSpan="2" className="px-1 py-1 border border-gray-300">Tanggal Perolehan</th>
+                            <th rowSpan="2" className="px-1 py-1 border border-gray-300">Keterangan</th>
+                            <th rowSpan="2" className="px-1 py-1 border border-gray-300">Aksi</th>
                         </tr>
                         {/* Bukti Kepemilikan */}
                         <tr>
-                          <th className="border border-gray-200 px-3 py-3">Nama</th>
-                          <th className="border border-gray-200 px-3 py-3">Nomor</th>
-                          <th className="border border-gray-200 px-3 py-3">Tanggal</th>
-                          <th className="border border-gray-200 px-3 py-3">Nama Kepemilikan</th>
+                          <th className="border border-gray-300 px-1 py-1">Nama</th>
+                          <th className="border border-gray-300 px-1 py-1">Nomor</th>
+                          <th className="border border-gray-300 px-1 py-1">Tanggal</th>
+                          <th className="border border-gray-300 px-1 py-1">Nama Kepemilikan</th>
                         </tr>
                     </thead>
                     <tbody className="text-xs text-center">
@@ -155,39 +145,22 @@ function KibTanah() {
                                 data.map((item,index) => (
                                 <tr key={item.id}
                                     className="transition duration-100 hover:bg-indigo-50 border-b border-gray-100">
-                                    <td className="border-r border-gray-100 px-3 py-3 font-mono text-center">{index +1}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3">{item.kode_barang}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3">{item.nama_barang}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3">{item.nibar}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3">{item.no_register}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3">{item.spesifikasi_nama_barang}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3">{item.spesifikasi_lainnya}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3">{item.jumlah}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3">{item.lokasi}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3">{item.titik_koordinat}</td>
+                                    <td className="border border-gray-200 px-3 py-3 font-mono text-center">{index +1}</td>
+                                    <td className="border border-gray-200 px-3 py-3">{item.kode_barang}</td>
+                                    <td className="border border-gray-200 px-3 py-3">{item.nama_barang}</td>
                                     {/* Bukti Kepemilikan */}
-                                    <td className="border-r border-gray-100 px-3 py-3">{ item.nama }</td>
-                                    <td className="border-r border-gray-100 px-3 py-3">{item.nomor}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3 text-center">{item.tanggal ? formatTanggal(item.tanggal) : '-'}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3 text-center">{item.nama_kepemilikan}</td>
+                                    <td className="border border-gray-200 px-3 py-3">{ item.nama }</td>
+                                    <td className="border border-gray-200 px-3 py-3">{item.nomor}</td>
+                                    <td className="border border-gray-200 px-3 py-3 text-center">{item.tanggal ? formatTanggal(item.tanggal) : '-'}</td>
+                                    <td className="border border-gray-200 px-3 py-3 text-center">{item.nama_kepemilikan}</td>
                                     {/*  */}
-                                    <td className="border-r border-gray-100 px-3 py-3">{item.harga_satuan ? formatRupiah(item.harga_satuan) : '0,00'}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3">{item.nilai_perolehan ? formatRupiah(item.nilai_perolehan) : '0,00'}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3">{item.tanggal_perolehan ? formatTanggal(item.tanggal_perolehan) : '-'}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3">{item.cara_perolehan}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3">{item.status_penggunaan}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3">{item.keterangan}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3 text-center">
-                                        <div className="inline-flex flex-col items-center">
-                                            {item.gambar ? (
-                                                <img src={`${import.meta.env.VITE_API_URL_IMAGE}/storage/${item.gambar}`} className="w-12 h-12" />
-                                            ) : (
-                                                <div className="w-12 h-12 border border-dashed border-gray-300 rounded-md flex items-center justify-center text-[9px] text-gray-400">Gambar</div>
-                                            )}
-                                        </div>
-                                    </td>
+                                    <td className="border border-gray-200 px-3 py-3">{item.harga_satuan ? formatRupiah(item.harga_satuan) : '0,00'}</td>
+                                    <td className="border border-gray-200 px-3 py-3">{item.nilai_perolehan ? formatRupiah(item.nilai_perolehan) : '0,00'}</td>
+                                    <td className="border border-gray-200 px-3 py-3">{item.tanggal_perolehan ? formatTanggal(item.tanggal_perolehan) : '-'}</td>
+                                    <td className="border border-gray-200 px-3 py-3">{item.keterangan}</td>
+                                   
 
-                                      <td className="px-3 py-3 text-center">
+                                      <td className="px-3 py-3 text-center border border-gray-200">
                                         <div className="flex items-center justify-center space-x-2">
                                             <Link to={`/kib/tanah/edit/${item.id}/edit`} className="cursor-pointer text-amber-600 hover:text-amber-800">
                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className='w-5 h-5'>

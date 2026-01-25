@@ -11,7 +11,7 @@ function Kir() {
     try {
       const res = await getKir();
       setData(res);
-      console.log(res);
+    //   console.log(res);
     } catch (err) {
     console.log(err)
       toast.error("Gagal mengambil data KIB Tanah");
@@ -109,6 +109,15 @@ function Kir() {
                                             <span className="mt-1 text-[10px] text-gray-400">Scan Label</span>
                                         </div>
                                     </td>
+                                    <td className="border-r border-gray-100 px-3 py-3 text-center">
+                                            <div className="inline-flex flex-col items-center">
+                                            {item.gambar ? (
+                                                <img src={`${import.meta.env.VITE_API_URL_IMAGE}/storage/${item.gambar}`} className="w-12 h-12" />
+                                            ) : (
+                                                <div className="w-12 h-12 border border-dashed border-gray-300 rounded-md flex items-center justify-center text-[9px] text-gray-400">Gambar</div>
+                                            )}
+                                            </div>
+                                        </td>
                                     <td className="px-3 py-3 text-center">
                                         <div className="flex items-center justify-center space-x-2">
                                             <Link to={`/kir/edit/${item.id}/edit`} className="text-amber-600 hover:text-amber-800">
