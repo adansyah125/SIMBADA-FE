@@ -1,8 +1,8 @@
 import api from "../lib/axios";
 
-export const getKibTanah = async () => {
-  const response = await api.get("/kib-tanah");
-  return response.data.data; // ⬅️ unwrap di sini
+export const getKibTanah = async (page = 1, search = "") => {
+  const response = await api.get(`/kib-tanah?page=${page}&search=${search}`);
+  return response.data; // ⬅️ unwrap di sini
 };
 
 export const createKibTanah = async (payload) => {

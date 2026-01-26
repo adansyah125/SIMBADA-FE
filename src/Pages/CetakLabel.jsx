@@ -1,19 +1,37 @@
 import { Link } from "react-router-dom"
 import { useState,useEffect } from "react";
 import {getKir,cetakLabelKir} from "../services/KirService"
+import { toast } from "react-toastify";
 function CetakLabel() {
   const [kirData, setKirData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [search, setSearch] = useState("");
   const [selectedKir, setSelectedKir] = useState(null);
   const [selectedKirIds, setSelectedKirIds] = useState([]);
 
-  useEffect(() => {
-    getKir()
-      .then((res) => {
-        setKirData(res);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  const fetchData = async (page =1) => {
+      try {
+        const res = await getKir(page, search);
+        const paginate = res.data;
+        setKirData(paginate.data);
+        setCurrentPage(paginate.current_page);
+        setLastPage(paginate.last_page);
+        setTotal(paginate.total);
+      //   console.log(res);
+      } catch (err) {
+      console.log(err)
+        toast.error("Gagal mengambil data KIB Tanah");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    useEffect(() => {
+      fetchData(currentPage);
+    }, [currentPage, search]);
 
   const handleCetak = async () => {
   const blob = await cetakLabelKir(selectedKirIds);
@@ -51,7 +69,13 @@ function CetakLabel() {
 
           {/* SEARCH */}
           <div className="mb-4 md:mb-6">
-            <input type="text" placeholder="Cari nama, kode, atau lokasi..." className="w-full border px-3 md:px-4 py-2 rounded-lg bg-gray-50 border-gray-200 shadow-sm text-sm"/>
+            <input type="text" placeholder="Cari nama, kode, atau lokasi..." 
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full border px-3 md:px-4 py-2 rounded-lg bg-gray-50 border-gray-200 shadow-sm text-sm"/>
           </div>
           {/* TOTAL */}
           <p className="text-sm text-gray-600 mb-3"> Total Aset:{" "}
@@ -98,7 +122,32 @@ function CetakLabel() {
               </tbody>
             </table>
           </div>
+          {/* Pagiination */}
+                <div className="flex justify-between items-center mt-4">
+                        <p className="text-sm text-gray-600">
+                            Halaman {currentPage} dari {lastPage} (Total {total} data)
+                        </p>
+
+                        <div className="flex space-x-2">
+                            <button
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage(currentPage - 1)}
+                                className="px-4 py-2 text-sm rounded-lg border border-gray-400 shadow  hover:bg-gray-100"
+                            >
+                                ⬅ Prev
+                            </button>
+
+                            <button
+                                disabled={currentPage === lastPage}
+                                onClick={() => setCurrentPage(currentPage + 1)}
+                                className="px-4 py-2 text-sm rounded-lg border border-gray-400 shadow  hover:bg-gray-100"
+                            >
+                                Next ➡
+                            </button>
+                        </div>
+                    </div>
         </div>
+        
 
         {/* ===================== PREVIEW + CETAK ===================== */}
         <div className="lg:w-96 w-full">

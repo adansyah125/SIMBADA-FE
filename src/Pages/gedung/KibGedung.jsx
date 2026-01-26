@@ -6,15 +6,24 @@ import {formatRupiah, formatTanggal} from "../../utils/Format";
 function KibGedung() {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [lastPage, setLastPage] = useState(1);
+    const [total, setTotal] = useState(0);
+    const [search, setSearch] = useState("");
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [showImportModal, setShowImportModal] = useState(false);
 
-    const fetchdata = async () => {
+    const fetchdata = async (page = 1 ) => {
+        setLoading(true);
         try{
-            const res = await getKibGedung();
-            setData(res);
-            console.log(res);
+            const res = await getKibGedung(page, search);
+            const paginate = res.data;
+            setData(paginate.data);
+            setCurrentPage(paginate.current_page);
+            setLastPage(paginate.last_page);
+            setTotal(paginate.total);
+            console.log(paginate)
         } catch (err){
             console.log(err);
             toast.error("Gagal mengambil data KIB Gedung");
@@ -24,8 +33,8 @@ function KibGedung() {
     };
 
     useEffect(() => {
-        fetchdata();
-    }, []);
+        fetchdata(currentPage);
+    }, [currentPage, search]);
 
   
 
@@ -85,12 +94,18 @@ function KibGedung() {
     
             {/* SEARCH & ADD */}
             <div className="flex flex-col md:flex-row gap-3 mb-5">
-                <input type="text" placeholder="Cari (Nama, kode, Nomor)..." className="px-4 py-2 w-full md:w-96 rounded-lg border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 text-sm"/>
+                <input type="text" placeholder="Cari (Nama, kode, Nomor)..." 
+                value={search}
+                onChange={(e) => {
+                    setSearch(e.target.value);
+                    setCurrentPage(1);
+                }}
+                className="px-4 py-2 w-full md:w-96 rounded-lg border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 text-sm"/>
                 <div className="ml-auto flex gap-2">
                 <Link to={"/kib/gedung/create"} className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition text-sm whitespace-nowrap">+ Tambah Data</Link>
                  <button type="button" onClick={() => setShowImportModal(true)} className="px-4 py-2 inline-flex gap-1 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition text-sm whitespace-nowrap cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="h-5 w-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-5 w-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                     </svg> Import Data
                 </button>
                 {/* INPUT FILE HIDDEN */}
@@ -102,63 +117,60 @@ function KibGedung() {
                 <table className="min-w-full table-auto border-collapse">
                     <thead className="bg-gray-50 text-center text-xs font-semibold text-gray-700 uppercase border-b border-gray-300 sticky top-0">
                         <tr>
-                            <th className="border-r border-gray-200 px-3 py-3">No</th>
-                            <th className="border-r border-gray-200 px-3 py-3 bg-indigo-50 text-indigo-700">
+                            <th className="border border-gray-300 px-3 py-3">No</th>
+                            <th className="border border-gray-300 px-3 py-3 bg-indigo-50 text-indigo-700">
                                Kode Barang
                             </th>
-                            <th className="border-r border-gray-200 px-3 py-3">Nama</th>
-                            <th className="border-r border-gray-200 px-3 py-3 w-40">
+                            <th className="border border-gray-300 px-3 py-3">Nama</th>
+                            <th className="border border-gray-300 px-3 py-3 w-40">
                                 NIBAR
                             </th>
-                            <th className="border-r border-gray-200 px-3 py-3">
+                            <th className="border border-gray-300 px-3 py-3">
                                 Nomor Register
                             </th>
-                            <th className="border-r border-gray-200 px-3 py-3">
+                            <th className="border border-gray-300 px-3 py-3">
                                 Spesifikasi 
                             </th>
-                            <th className="border-r border-gray-200 px-3 py-3">
+                            <th className="border border-gray-300 px-3 py-3">
                                 Spesifikasi Lainnya
                             </th>
-                            <th className="border-r border-gray-200 px-3 py-3">
+                            <th className="border border-gray-300 px-3 py-3">
                                Jumlah Lantai
                             </th>
                             
-                            <th className="border-r border-gray-200 px-3 py-3">
+                            <th className="border border-gray-300 px-3 py-3">
                                Lokasi
                             </th>
-                            <th className="border-r border-gray-200 px-3 py-3">
+                            <th className="border border-gray-300 px-3 py-3">
                                 Titik Koordinat
                             </th>
                            
-                            <th className="border-r border-gray-200 px-3 py-3">
+                            <th className="border border-gray-300 px-3 py-3">
                                 Harga Satuan
                             </th>
-                             <th className="border-r border-gray-200 px-3 py-3">
+                             <th className="border border-gray-300 px-3 py-3">
                                 Status Kepemilikan Tanah
                             </th>
-                             <th className="border-r border-gray-200 px-3 py-3">
+                             <th className="border border-gray-300 px-3 py-3">
                                 jumlah
                             </th>
-                             <th className="border-r border-gray-200 px-3 py-3">
+                             <th className="border border-gray-300 px-3 py-3">
                                 satuan
                             </th>
-                             <th className="border-r border-gray-200 px-3 py-3">
+                             <th className="border border-gray-300 px-3 py-3">
                                 Harga Perolehan
                             </th>
-                             <th className="border-r border-gray-200 px-3 py-3">
+                             <th className="border border-gray-300 px-3 py-3">
                                 cara perolehan
                             </th>
-                             <th className="border-r border-gray-200 px-3 py-3">
+                             <th className="border border-gray-300 px-3 py-3">
                                 tanggal perolehan
                             </th>
-                             <th className="border-r border-gray-200 px-3 py-3">
+                             <th className="border border-gray-300 px-3 py-3">
                                 status penggunaan
                             </th>
-                             <th className="border-r border-gray-200 px-3 py-3">
+                             <th className="border border-gray-300 px-3 py-3">
                                 keterangan
-                            </th>
-                             <th className="border-r border-gray-200 px-3 py-3">
-                                IMAGE
                             </th>
                             <th className="px-3 py-3 bg-gray-100">Aksi</th>
                         </tr>
@@ -184,84 +196,73 @@ function KibGedung() {
                                 <tr key={item.id}
                                     className="transition duration-100 hover:bg-indigo-50 border-b border-gray-100"
                                 >
-                                    <td className="border-r border-gray-100 px-3 py-3 font-mono text-center">
+                                    <td className="border border-gray-200 px-3 py-3 font-mono text-center">
                                         {index + 1}
                                     </td>
-                                    <td className="border-r border-gray-100 px-3 py-3">
+                                    <td className="border border-gray-200 px-3 py-3">
                                         {item.kode_barang}
                                     </td>
-                                    <td className="border-r border-gray-100 px-3 py-3">
+                                    <td className="border border-gray-200 px-3 py-3">
                                         {item.nama_barang}
                                     </td>
-                                    <td className="border-r border-gray-100 px-3 py-3">
+                                    <td className="border border-gray-200 px-3 py-3">
                                         {item.nibar}
                                     </td>
-                                    <td className="border-r border-gray-100 px-3 py-3">
+                                    <td className="border border-gray-200 px-3 py-3">
                                         {item.no_register}
                                     </td>
-                                    <td className="border-r border-gray-100 px-3 py-3">
+                                    <td className="border border-gray-200 px-3 py-3">
                                         {item.spesifikasi_nama_barang}
                                     </td>
-                                    <td className="border-r border-gray-100 px-3 py-3">
+                                    <td className="border border-gray-200 px-3 py-3">
                                         {item.spesifikasi_lainnya}
                                     </td>
-                                    <td className="border-r border-gray-100 px-3 py-3">
+                                    <td className="border border-gray-200 px-3 py-3">
                                         {item.jumlah_lantai}
                                     </td>
-                                    <td className="border-r border-gray-100 px-3 py-3">
+                                    <td className="border border-gray-200 px-3 py-3">
                                         {item.lokasi}
                                     </td>
-                                    <td className="border-r border-gray-100 px-3 py-3">
+                                    <td className="border border-gray-200 px-3 py-3">
                                         {item.titik_koordinat}
                                     </td>
                                     
-                                    <td className="border-r border-gray-100 px-3 py-3">
+                                    <td className="border border-gray-200 px-3 py-3">
                                        {item.status_kepemilikan_tanah}
                                     </td>
                                     {/* Bukti Kepemilikan */}
-                                    <td className="border-r border-gray-100 px-3 py-3">
+                                    <td className="border border-gray-200 px-3 py-3">
                                        {item.jumlah}
                                     </td>
-                                    <td className="border-r border-gray-100 px-3 py-3">
+                                    <td className="border border-gray-200 px-3 py-3">
                                        {item.satuan}
                                     </td>
                                     
-                                    <td className="border-r border-gray-100 px-3 py-3 text-center">
+                                    <td className="border border-gray-200 px-3 py-3 text-center">
                                        {formatRupiah(item.harga_satuan ?? '0')}
                                     </td>
-                                    <td className="border-r border-gray-100 px-3 py-3 text-center">
+                                    <td className="border border-gray-200 px-3 py-3 text-center">
                                        {formatRupiah(item.nilai_perolehan ?? '0')}
                                     </td>
                                     {/*  */}
-                                    <td className="border-r border-gray-100 px-3 py-3">
+                                    <td className="border border-gray-200 px-3 py-3">
                                         {item.cara_perolehan}
                                     </td>
-                                    <td className="border-r border-gray-100 px-3 py-3">
+                                    <td className="border border-gray-200 px-3 py-3">
                                         {formatTanggal(item.tanggal_perolehan)}
                                     </td>
-                                    <td className="border-r border-gray-100 px-3 py-3">
+                                    <td className="border border-gray-200 px-3 py-3">
                                         {item.status_penggunaan}
                                     </td>
-                                    <td className="border-r border-gray-100 px-3 py-3">
+                                    <td className="border border-gray-200 px-3 py-3">
                                         {item.keterangan}
-                                    </td>
-                                     <td className="border-r border-gray-100 px-3 py-3 text-center">
-                                        <div className="inline-flex flex-col items-center">
-                                                  {item.gambar ? (
-                                                <img src={`${import.meta.env.VITE_API_URL_IMAGE}/storage/${item.gambar}`} className="w-12 h-12" />
-                                            ) : (
-                                                <div className="w-12 h-12 border border-dashed border-gray-300 rounded-md flex items-center justify-center text-[9px] text-gray-400">
-                                                    Gambar
-                                                </div>
-                                            )}
-                                        </div>
                                     </td>
                                     <td className="px-3 py-3 text-center">
                                         <div className="flex items-center justify-center space-x-2">
                                             <Link to={`/kib/gedung/edit/${item.id}/edit`} className="cursor-pointer text-amber-600 hover:text-amber-800">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className='w-5 h-5'>
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className='w-5 h-5'>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                                 </svg>
                                             </Link>
                                             <button
@@ -292,6 +293,30 @@ function KibGedung() {
                     </tbody>
                 </table>
             </div>
+            {/* Pagiination */}
+                <div className="flex justify-between items-center mt-4">
+                        <p className="text-sm text-gray-600">
+                            Halaman {currentPage} dari {lastPage} (Total {total} data)
+                        </p>
+
+                        <div className="flex space-x-2">
+                            <button
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage(currentPage - 1)}
+                                className="px-4 py-2 text-sm rounded-lg border border-gray-400 shadow  hover:bg-gray-100"
+                            >
+                                ⬅ Prev
+                            </button>
+
+                            <button
+                                disabled={currentPage === lastPage}
+                                onClick={() => setCurrentPage(currentPage + 1)}
+                                className="px-4 py-2 text-sm rounded-lg border border-gray-400 shadow  hover:bg-gray-100"
+                            >
+                                Next ➡
+                            </button>
+                        </div>
+                    </div>
 
             {/* CARD LIST - Mobile */}
             <div className="md:hidden space-y-3">

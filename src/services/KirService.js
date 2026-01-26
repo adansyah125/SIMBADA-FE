@@ -5,9 +5,9 @@ import api from "../lib/axios";
  * GET ALL KIR
  * =========================
  */
-export const getKir = async () => {
-  const response = await api.get("/kir");
-  return response.data.data;
+export const getKir = async (page = 1, search = "") => {
+  const response = await api.get(`/kir?page=${page}&search=${search}`);
+  return response.data;
 };
 
 /**

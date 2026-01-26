@@ -5,32 +5,7 @@ import {createKibGedung} from "../../services/KibGedungService";
 import { toast } from "react-toastify";
 function CreateGedung() {
   const navigate = useNavigate();
-  const [previewImage, setPreviewImage] = useState(null);
-    const [fileError, setFileError] = useState("");
-
-    const handleFileChange = (file) => {
-  const maxSize = 5120 * 1024; // 5MB dalam Bytes
-
-  if (file) {
-    if (file.size > maxSize) {
-      setFileError("Gambar terlalu besar, maksimal 5MB");
-      // Reset form dan preview agar tidak mengirim file yang salah
-      setForm({ ...form, gambar: null });
-      setPreviewImage(null);
-      document.getElementById("fileUpload").value = ""; 
-      return;
-    }
-
-    // Jika lolos validasi, hapus pesan error
-    setFileError("");
-    setForm({ ...form, gambar: file });
-    
-    // Bersihkan memori URL lama jika ada
-    if (previewImage) URL.revokeObjectURL(previewImage);
-    setPreviewImage(URL.createObjectURL(file));
-  }
-};
-
+  
   const [form, setForm] = useState({
     kode_barang: "",
     nama_barang: "",
@@ -50,7 +25,6 @@ function CreateGedung() {
     cara_perolehan:"",
     status_penggunaan:"",
     keterangan:"",
-    gambar:"",
   });
 
   const handleChange = (e) => {
@@ -101,42 +75,6 @@ function CreateGedung() {
           <Input type="text" label="cara_perolehan" name="cara_perolehan" value={form.cara_perolehan} onChange={handleChange} />
           <Input type="text" label="status_penggunaan" name="status_penggunaan" value={form.status_penggunaan} onChange={handleChange} />
           <Input type="text" label="keterangan" name="keterangan" value={form.keterangan} onChange={handleChange} />
-          {/* GAMBAR */}
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Gambar</label>
-                <div className="border-2 border-dashed border-gray-400 rounded-lg p-4 cursor-pointer hover:border-blue-500 transition text-center"
-                  onClick={() => document.getElementById("fileUpload").click()}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    const file = e.dataTransfer.files[0];
-                    if (file) {
-                      setForm({ ...form, gambar: file });
-                      setPreviewImage(URL.createObjectURL(file));
-                    }
-                  }}>
-                  {previewImage ? (
-                    <img src={previewImage} alt="Preview" className="mx-auto h-40 object-cover rounded-md" />
-                  ) : (
-                    <div className="text-gray-500">
-                      <p className="font-medium">Choose Image or Drag & Drop</p>
-                      <p className="text-sm">PNG, JPG, JPEG</p>
-                    </div>
-                  )}
-              </div>
-              {fileError && (
-                <p className="text-red-500 text-xs mt-1">{fileError}</p>
-                )}
-                <input id="fileUpload" type="file" name="gambar" accept="image/*" className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    setForm({ ...form, gambar: file });
-                    setPreviewImage(URL.createObjectURL(file));
-                    handleFileChange(file);
-                  }}
-                  
-                />
-              </div>
 
         </div> 
          <div className="flex justify-end space-x-3">

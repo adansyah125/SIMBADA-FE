@@ -5,26 +5,41 @@ import { toast } from "react-toastify";
 import {formatRupiah, formatTanggal} from "../../utils/Format"
 
 function KibMesin() {
+    // fetch
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [lastPage, setLastPage] = useState(1);
+    const [total, setTotal] = useState(0);
+    const [search, setSearch] = useState("");
+
+
+    // import
     const fileInputRef = useRef(null);
     const [showImportModal, setShowImportModal] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
 
-    const fetchData = async () => {
-        try {
-            const res = await getKibMesin();
-            setData(res);
-        } catch (err){
-            console.log(err);
-            toast.error("Gagal mengambil data KIB Mesin");
-        } finally {
-            setLoading(false);
-        }
-    };
+    const fetchData = async (page = 1) => {
+    setLoading(true);
+    try {
+        const res = await getKibMesin(page,search);
+
+        const paginate = res.data;
+        setData(paginate.data);                    // isi tabel
+        setCurrentPage(paginate.current_page);      // dari Laravel
+        setLastPage(paginate.last_page);            // dari Laravel
+        setTotal(paginate.total);                   // total data
+    } catch (err) {
+        console.log(err);
+        toast.error("Gagal mengambil data KIB Mesin");
+    } finally {
+        setLoading(false);
+    }
+};
+
     useEffect(() => {
-        fetchData();
-    }, []);
+        fetchData(currentPage);
+    }, [currentPage,search]);
 
     const handleDelete = async (id) => {
         const confirm = window.confirm("Yakin ingin menghapus data ini?");
@@ -84,7 +99,13 @@ function KibMesin() {
                 </div>
                 {/* SEARCH & ADD */}
                 <div className="flex flex-col md:flex-row gap-3 mb-5">
-                    <input type="text" placeholder="Cari (Nama, kode, Nomor)..." className="px-4 py-2 w-full md:w-96 rounded-lg border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 text-sm"/>
+                    <input type="text" placeholder="Cari (Nama, kode_barang, no_polisi)..." 
+                    value={search}
+                    onChange={(e) => {
+                        setSearch(e.target.value);
+                        setCurrentPage(1);
+                    }}
+                    className="px-4 py-2 w-full md:w-96 rounded-lg border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 text-sm"/>
                     <div className="ml-auto flex gap-2">
                     <Link to={"/kib/mesin/create"} className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition text-sm whitespace-nowrap">+ Tambah Data</Link>
                     <button type="button" onClick={() => setShowImportModal(true)} className="px-4 py-2 inline-flex gap-1 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition text-sm whitespace-nowrap cursor-pointer">
@@ -102,26 +123,25 @@ function KibMesin() {
                     <table className="min-w-full table-auto border-collapse">
                         <thead className="bg-gray-50 text-center text-xs font-semibold text-gray-700 uppercase border-b border-gray-300 sticky top-0">
                             <tr>
-                                <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">No</th>
-                                <th rowSpan="2" className="border-r border-gray-200 px-3 py-3 bg-indigo-50 text-indigo-700">Kode Barang</th>
-                                <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Nama</th>
-                                <th rowSpan="2" className="border-r border-gray-200 px-3 py-3 w-40">NIBAR</th>
-                                <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Nomor Register</th>
-                                <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Spesifikasi </th>
-                                <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Spesifikasi Lainnya</th>
-                                <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Merk</th>
-                                <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Lokasi</th>
-                                <th colSpan="3" className="border-r border-gray-200 px-3 py-3">Kendaraan Dinas</th>
-                                <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Jumlah</th>
-                                <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Satuan</th>
-                                <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Harga Satuan</th>
-                                <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Nilai Perolehan</th>
-                                <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">cara Perolehan</th>
-                                <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">tanggal Perolehan</th>
-                                <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Status Penggunaan</th>
-                                <th rowSpan="2" className="border-r border-gray-200 px-3 py-3">Keterangan</th>
-                                <th rowSpan="2" className="px-3 py-3 bg-gray-100">IMAGE</th>
-                                <th rowSpan="2" className="px-3 py-3 bg-gray-100">Aksi</th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3">No</th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3 bg-indigo-50 text-indigo-700">Kode Barang</th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3">Nama</th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3 w-40">NIBAR</th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3">Nomor Register</th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3">Spesifikasi </th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3">Spesifikasi Lainnya</th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3">Merk</th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3">Lokasi</th>
+                                <th colSpan="3" className="border border-gray-300 px-3 py-3">Kendaraan Dinas</th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3">Jumlah</th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3">Satuan</th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3">Harga Satuan</th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3">Nilai Perolehan</th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3">cara Perolehan</th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3">tanggal Perolehan</th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3">Status Penggunaan</th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3">Keterangan</th>
+                                <th rowSpan="2" className="border border-gray-300 px-3 py-3">Aksi</th>
                             </tr>
                             <tr>
                               <th className="border-r border-gray-200 px-3 py-3">No Polisi</th>
@@ -147,38 +167,29 @@ function KibMesin() {
                                 ) : (
                                 data.map((item, index) => (
                                     <tr key={item.id} className="transition duration-100 hover:bg-indigo-50 border-b border-gray-100">
-                                        <td className="border-r border-gray-100 px-3 py-3 font-mono text-center"> {index + 1} </td>
-                                        <td className="border-r border-gray-100 px-3 py-3"> {item.kode_barang} </td>
-                                        <td className="border-r border-gray-100 px-3 py-3"> {item.nama_barang} </td>
-                                        <td className="border-r border-gray-100 px-3 py-3"> {item.nibar} </td>
-                                        <td className="border-r border-gray-100 px-3 py-3"> {item.no_register} </td>
-                                        <td className="border-r border-gray-100 px-3 py-3"> {item.spesifikasi_nama_barang} </td>
-                                        <td className="border-r border-gray-100 px-3 py-3"> {item.spesifikasi_lainnya}</td>
-                                        <td className="border-r border-gray-100 px-3 py-3"> {item.merk} </td>
-                                        <td className="border-r border-gray-100 px-3 py-3"> {item.lokasi} </td>
-                                        <td className="border-r border-gray-100 px-3 py-3"> {item.no_polisi} </td>
-                                        <td className="border-r border-gray-100 px-3 py-3"> {item.no_rangka} </td>
+                                        <td className="border border-gray-200 px-3 py-3 font-mono text-center"> {index + 1 + (currentPage -1) * 10} </td>
+                                        <td className="border border-gray-200 px-3 py-3"> {item.kode_barang} </td>
+                                        <td className="border border-gray-200 px-3 py-3"> {item.nama_barang} </td>
+                                        <td className="border border-gray-200 px-3 py-3"> {item.nibar} </td>
+                                        <td className="border border-gray-200 px-3 py-3"> {item.no_register} </td>
+                                        <td className="border border-gray-200 px-3 py-3"> {item.spesifikasi_nama_barang} </td>
+                                        <td className="border border-gray-200 px-3 py-3"> {item.spesifikasi_lainnya}</td>
+                                        <td className="border border-gray-200 px-3 py-3"> {item.merk} </td>
+                                        <td className="border border-gray-200 px-3 py-3"> {item.lokasi} </td>
+                                        <td className="border border-gray-200 px-3 py-3"> {item.no_polisi} </td>
+                                        <td className="border border-gray-200 px-3 py-3"> {item.no_rangka} </td>
                                         {/* Bukti Kepemilikan */}
-                                        <td className="border-r border-gray-100 px-3 py-3">{item.no_bpkb}</td>
-                                        <td className="border-r border-gray-100 px-3 py-3">{item.jumlah}</td>
+                                        <td className="border border-gray-200 px-3 py-3">{item.no_bpkb}</td>
+                                        <td className="border border-gray-200 px-3 py-3">{item.jumlah}</td>
                                         
-                                        <td className="border-r border-gray-100 px-3 py-3 text-center">{item.satuan}</td>
-                                        <td className="border-r border-gray-100 px-3 py-3 text-center">{formatRupiah(item.harga_satuan ??  '0')}</td>
+                                        <td className="border border-gray-200 px-3 py-3 text-center">{item.satuan}</td>
+                                        <td className="border border-gray-200 px-3 py-3 text-center">{formatRupiah(item.harga_satuan ??  '0')}</td>
                                         {/*  */}
-                                        <td className="border-r border-gray-100 px-3 py-3">{formatRupiah(item.nilai_perolehan ?? '0')}</td>
-                                        <td className="border-r border-gray-100 px-3 py-3">{item.cara_perolehan}</td>
-                                        <td className="border-r border-gray-100 px-3 py-3">{formatTanggal(item.tanggal_perolehan ?? '0')}</td>
-                                        <td className="border-r border-gray-100 px-3 py-3">{item.status_penggunaan}</td>
-                                        <td className="border-r border-gray-100 px-3 py-3">{item.keterangan}</td>
-                                        <td className="border-r border-gray-100 px-3 py-3 text-center">
-                                            <div className="inline-flex flex-col items-center">
-                                            {item.gambar ? (
-                                                <img src={`${import.meta.env.VITE_API_URL_IMAGE}/storage/${item.gambar}`} className="w-12 h-12" />
-                                            ) : (
-                                                <div className="w-12 h-12 border border-dashed border-gray-300 rounded-md flex items-center justify-center text-[9px] text-gray-400">Gambar</div>
-                                            )}
-                                            </div>
-                                        </td>
+                                        <td className="border border-gray-200 px-3 py-3">{formatRupiah(item.nilai_perolehan ?? '0')}</td>
+                                        <td className="border border-gray-200 px-3 py-3">{item.cara_perolehan}</td>
+                                        <td className="border border-gray-200 px-3 py-3">{formatTanggal(item.tanggal_perolehan ?? '0')}</td>
+                                        <td className="border border-gray-200 px-3 py-3">{item.status_penggunaan}</td>
+                                        <td className="border border-gray-200 px-3 py-3">{item.keterangan}</td>
                                         <td className="px-3 py-3 text-center">
                                             <div className="flex items-center justify-center space-x-2">
                                                 <Link to={`/kib/mesin/edit/${item.id}/edit`} className="cursor-pointer text-amber-600 hover:text-amber-800">
@@ -201,6 +212,30 @@ function KibMesin() {
                         </tbody>
                     </table>
                 </div>
+                    {/* Pagiination */}
+                <div className="flex justify-between items-center mt-4">
+                        <p className="text-sm text-gray-600">
+                            Halaman {currentPage} dari {lastPage} (Total {total} data)
+                        </p>
+
+                        <div className="flex space-x-2">
+                            <button
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage(currentPage - 1)}
+                                className="px-4 py-2 text-sm rounded-lg border border-gray-400 shadow  hover:bg-gray-100"
+                            >
+                                ⬅ Prev
+                            </button>
+
+                            <button
+                                disabled={currentPage === lastPage}
+                                onClick={() => setCurrentPage(currentPage + 1)}
+                                className="px-4 py-2 text-sm rounded-lg border border-gray-400 shadow  hover:bg-gray-100"
+                            >
+                                Next ➡
+                            </button>
+                        </div>
+                    </div>
     
                 {/* CARD LIST - Mobile */}
                 <div className="md:hidden space-y-3">

@@ -6,16 +6,27 @@ import { toast } from "react-toastify";
 import {formatRupiah, formatTanggal} from "../../utils/Format";
 
 function KibTanah() {
+    // fetch
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [lastPage, setLastPage] = useState(1);
+    const [total, setTotal] = useState(0);
+    const [search, setSearch] = useState("");
+    // import
     const fileInputRef = useRef(null);
     const [showImportModal, setShowImportModal] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
+    
 
-  const fetchData = async () => {
+  const fetchData = async (page = 1) => {
     try {
-      const res = await getKibTanah();
-      setData(res);
+      const res = await getKibTanah(page, search);
+      const paginate = res.data;
+      setData(paginate.data);
+      setCurrentPage(paginate.current_page);
+      setLastPage(paginate.last_page);
+      setTotal(paginate.total);
     } catch (err) {
       console.log(err)
       toast.error("Gagal mengambil data KIB Tanah");
@@ -25,8 +36,8 @@ function KibTanah() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(currentPage);
+  }, [currentPage, search]);
 
  
   const handleDelete = async (id) => {
@@ -90,7 +101,13 @@ function KibTanah() {
 
             {/* SEARCH & ADD */}
             <div className="flex flex-col md:flex-row items-center  gap-3 mb-5">
-                <input type="text" placeholder="Cari (Nama, kode, Nomor)..." className="px-4 py-2 w-full md:w-96 rounded-lg border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 text-sm"/>
+                <input type="text" placeholder="Cari (Nama, kode Barang)..." 
+                value={search}
+                onChange={(e) => {
+                    setSearch(e.target.value);
+                    setCurrentPage(1);
+                }}
+                className="px-4 py-2 w-full md:w-96 rounded-lg border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 text-sm"/>
                 <div className='ml-auto flex gap-2'>
                 <Link to={"/kib/tanah/create"} className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition text-sm whitespace-nowrap">+ Tambah Data</Link>
                  <button type="button" onClick={() => setShowImportModal(true)} className="px-4 py-2 inline-flex gap-1 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition text-sm whitespace-nowrap cursor-pointer">
@@ -108,7 +125,7 @@ function KibTanah() {
                 <table className="min-w-full table-auto border-collapse">
                     <thead className="bg-gray-50 text-center text-xs font-semibold text-gray-700 uppercase border-b border-gray-300 sticky top-0">
                         <tr>
-                            <th rowSpan="2" className="border border-gray-300 px-1 py-1">No</th>
+                            <th rowSpan="2"className="border border-gray-300 px-1 py-1">No</th>
                             <th rowSpan="2" className="border border-gray-300 px-1 py-1 bg-indigo-50 text-indigo-700">Kode Barang</th>
                             <th rowSpan="2" className="border border-gray-300 px-1 py-1">Nama</th>
                             <th className="border border-gray-300 px-1 py-1" colSpan="4">Bukti Kepemilikan</th>
@@ -137,7 +154,7 @@ function KibTanah() {
                                 </td>
                             </tr>
                         ) :
-                          data.length === 0 ? (
+                          data.length === 0 ?  (
                                 <tr>
                                     <td colSpan="22" className="text-gray-500 p-4 font-semibold uppercase italic">~~Data kosong~~</td>
                                 </tr>
@@ -182,6 +199,30 @@ function KibTanah() {
                     </tbody>
                 </table>
             </div>
+              {/* Pagiination */}
+                <div className="flex justify-between items-center mt-4">
+                        <p className="text-sm text-gray-600">
+                            Halaman {currentPage} dari {lastPage} (Total {total} data)
+                        </p>
+
+                        <div className="flex space-x-2">
+                            <button
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage(currentPage - 1)}
+                                className="px-4 py-2 text-sm rounded-lg border border-gray-400 shadow  hover:bg-gray-100"
+                            >
+                                ⬅ Prev
+                            </button>
+
+                            <button
+                                disabled={currentPage === lastPage}
+                                onClick={() => setCurrentPage(currentPage + 1)}
+                                className="px-4 py-2 text-sm rounded-lg border border-gray-400 shadow  hover:bg-gray-100"
+                            >
+                                Next ➡
+                            </button>
+                        </div>
+                    </div>
 
             {/* CARD LIST - Mobile */}
             <div className="md:hidden space-y-3">

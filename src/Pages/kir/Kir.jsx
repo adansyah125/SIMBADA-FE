@@ -6,11 +6,19 @@ import { toast } from "react-toastify"
 
 function Kir() {
     const [data, setData] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [lastPage, setLastPage] = useState(1);
+    const [total, setTotal] = useState(0);
+    const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
-  const fetchData = async () => {
+  const fetchData = async (page = 1) => {
     try {
-      const res = await getKir();
-      setData(res);
+      const res = await getKir(page, search);
+      const paginate = res.data;
+      setData(paginate.data);
+      setCurrentPage(paginate.current_page);
+      setLastPage(paginate.last_page);
+      setTotal(paginate.total);
     //   console.log(res);
     } catch (err) {
     console.log(err)
@@ -21,8 +29,8 @@ function Kir() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(currentPage);
+  }, [currentPage, search]);
 
   
   return (
@@ -41,6 +49,11 @@ function Kir() {
                 <input 
                     type="text"
                     placeholder="Cari data (Nama, Kode, Lokasi)..."
+                    value={search}
+                    onChange={(e) => {
+                    setSearch(e.target.value);
+                    setCurrentPage(1);
+                }}
                     className="px-4 py-2 w-full md:w-96 rounded-lg border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 text-sm"
                 />
                 <Link to={"/kir/create"} className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm whitespace-nowrap hover:bg-indigo-700 transition ml-auto">
@@ -62,6 +75,7 @@ function Kir() {
                             <th className="px-3 py-3 border-r border-gray-200">Jumlah</th> 
                             <th className="px-3 py-3 border-r border-gray-200">Nilai Perolehan</th>
                             <th className="px-3 py-3 border-r border-gray-200 bg-indigo-50 text-indigo-700">QR Code</th>
+                            <th className="px-3 py-3 border-r border-gray-200">Gambar</th>
                             <th className="px-3 py-3 bg-gray-100">Aksi</th>
                         </tr>
                     </thead>
@@ -140,6 +154,30 @@ function Kir() {
                     </tbody>
                 </table>
             </div>
+            {/* Pagiination */}
+                <div className="flex justify-between items-center mt-4">
+                        <p className="text-sm text-gray-600">
+                            Halaman {currentPage} dari {lastPage} (Total {total} data)
+                        </p>
+
+                        <div className="flex space-x-2">
+                            <button
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage(currentPage - 1)}
+                                className="px-4 py-2 text-sm rounded-lg border border-gray-400 shadow  hover:bg-gray-100"
+                            >
+                                ⬅ Prev
+                            </button>
+
+                            <button
+                                disabled={currentPage === lastPage}
+                                onClick={() => setCurrentPage(currentPage + 1)}
+                                className="px-4 py-2 text-sm rounded-lg border border-gray-400 shadow  hover:bg-gray-100"
+                            >
+                                Next ➡
+                            </button>
+                        </div>
+                    </div>
 
             {/* CARD VIEW - Mobile */}
             <div className="md:hidden space-y-3">
