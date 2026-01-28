@@ -102,6 +102,7 @@ useEffect(() => {getDashboard().then(setDashboard);}, []);
                 </div>
                 {/* SEbaran lokasi */}
                 <div className="space-y-5">
+                    <h1 className='font-semibold'>Sebaran Lokasi</h1>
                 {dashboard &&
                     Object.entries(dashboard.sebaran_lokasi).map(
                     ([lokasi, items]) => {

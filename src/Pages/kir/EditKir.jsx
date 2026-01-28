@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 function EditKir() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const [oldImage, setOldImage] = useState({});
   const [previewImage, setPreviewImage] = useState(null);
   const [fileError, setFileError] = useState("");
@@ -42,6 +43,9 @@ function EditKir() {
     jumlah: "",
     nilai_perolehan: "",
     gambar: null,
+    tanah_id: null,
+  gedung_id: null,
+  mesin_id: null,
   });
 
   const [qr, setQr] = useState(null);
@@ -57,9 +61,14 @@ function EditKir() {
         jumlah: res.jumlah,
         nilai_perolehan: res.nilai_perolehan,
         gambar: res.gambar,
+         // 🔥 PENTING
+      tanah_id: res.tanah_id,
+      gedung_id: res.gedung_id,
+      mesin_id: res.mesin_id,
       });
       setOldImage(res.gambar); 
       setQr(res.gambar_qr);
+      setLoading(false);
     });
   }, [id]);
 
@@ -73,6 +82,16 @@ function EditKir() {
     toast.success("Data KIR berhasil diperbarui");
     navigate("/kir");
   };
+  if (loading) {
+    return (
+      <div className="flex space-x-2 justify-center items-center h-screen">
+      <span className="sr-only">Loading...</span>
+      <div className="h-3 w-3 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+      <div className="h-3 w-3 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+      <div className="h-3 w-3 bg-blue-600 rounded-full animate-bounce"></div>
+    </div>   
+    )
+  }
 
   return (
     <main className="p-8 flex-1">
@@ -104,8 +123,9 @@ function EditKir() {
                     name="nama_barang"
                     value={form.nama_barang}
                     onChange={handleChange}
-                    className="mt-1 w-full border rounded-md p-2"
+                    className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
                     placeholder="Nama Barang"
+                    readOnly
                 />
             </div>
             <div>
@@ -114,8 +134,9 @@ function EditKir() {
                 name="kode_barang"
                 value={form.kode_barang}
                 onChange={handleChange}
-                className="mt-1 w-full border rounded-md p-2"
+                className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
                 placeholder="Kode Barang"
+                readOnly
             />
           </div>
           <div>
@@ -125,19 +146,25 @@ function EditKir() {
             name="tanggal_perolehan"
             value={form.tanggal_perolehan}
             onChange={handleChange}
-            className="mt-1 w-full border rounded-md p-2"
+            className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
           />
           </div>
-          <div>
-             <label className="block text-sm font-medium">Lokasi</label>
-          <input
+         <div>
+          <label className="block text-sm font-medium text-gray-700">Lokasi</label>
+          <select
             name="lokasi"
-            value={form.lokasi}
+           
+            value={form.lokasi || ''} 
             onChange={handleChange}
-            className="mt-1 w-full border rounded-md p-2"
-            placeholder="Lokasi"
-          />
-          </div>
+            className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300 bg-white focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="" disabled>-- Pilih Lokasi --</option>
+            <option value="Gudang A">Gudang A</option>
+            <option value="Gudang B">Gudang B</option>
+            <option value="Kantor Pusat">Kantor Pusat</option>
+            <option value="Ruang IT">Ruang IT</option>
+          </select>
+        </div>
           <div>
              <label className="block text-sm font-medium">Jumlah</label>
           <input
@@ -145,7 +172,7 @@ function EditKir() {
             name="jumlah"
             value={form.jumlah}
             onChange={handleChange}
-            className="mt-1 w-full border rounded-md p-2"
+            className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
             placeholder="Jumlah"
           />
           </div>
@@ -156,7 +183,7 @@ function EditKir() {
             name="nilai_perolehan"
             value={form.nilai_perolehan}
             onChange={handleChange}
-            className="mt-1 w-full border rounded-md p-2"
+            className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
             placeholder="Nilai Perolehan"
           />
           </div>
@@ -167,8 +194,9 @@ function EditKir() {
             name="kondisi"
             value={form.kondisi}
             onChange={handleChange}
-            className="mt-1 w-full border rounded-md p-2"
+            className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
           >
+            <option value="" disabled>-- Kondisi --</option>
             <option value="baik">Baik</option>
             <option value="kurang baik">Kurang Baik</option>
             <option value="rusak berat">Rusak Berat</option>
@@ -239,8 +267,8 @@ function EditKir() {
                 </div>
 
         {/* BUTTON */}
-        <div className="flex gap-3">
-          <Link to="/kir" className="px-4 py-2 border rounded-md">
+        <div className="flex gap-3 justify-end">
+          <Link to="/kir" className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm text-gray-700 hover:bg-gray-200">
             Batal
           </Link>
           <button className="px-4 py-2 bg-green-600 text-white rounded-md">

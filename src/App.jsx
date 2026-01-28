@@ -24,6 +24,7 @@ import CreateMesin from "./Pages/mesin/CreateMesin";
 import Kir from "./Pages/kir/Kir";
 import CreateKir from "./Pages/kir/CreateKir";
 import EditKir from "./Pages/kir/EditKir";
+import ScanLabel from "./Pages/ScanLabel";
 
 import CetakLabel from "./pages/CetakLabel";
 import Laporan from "./Pages/laporan/Laporan";
@@ -46,6 +47,8 @@ export default function App() {
 
         {/* ===== PUBLIC ===== */}
         <Route path="/" element={<Login />} />
+        <Route path="/label/:id" element={<ScanLabel />} />
+
 
         {/* ===== PROTECTED ===== */}
         <Route element={<ProtectedRoute />}>

@@ -13,6 +13,7 @@ function CreateKir() {
   const [jenisKib, setJenisKib] = useState("");
   const [kibList, setKibList] = useState([]);
   const [selectedKib, setSelectedKib] = useState(null);
+  const [search, setSearch] = useState("");
 
   const [previewImage, setPreviewImage] = useState(null);
       const [fileError, setFileError] = useState("");
@@ -41,10 +42,11 @@ function CreateKir() {
       }
 
   const [form, setForm] = useState({
-    kondisi: "baik",
+    kondisi: "",
     lokasi: "",
-    jumlah: 1,
+    jumlah: "",
     nilai_perolehan: "",
+    tanggal_perolehan: "",
     gambar:null,
   });
 
@@ -55,19 +57,23 @@ function CreateKir() {
     if (!jenisKib) return;
 
     const fetchKib = async () => {
-      try {
-        let data = [];
+  try {
+    let res;
 
-        if (jenisKib === "tanah") data = await getKibTanah();
-        if (jenisKib === "mesin") data = await getKibMesin();
-        if (jenisKib === "gedung") data = await getKibGedung();
+    if (jenisKib === "tanah") res = await getKibTanah();
+    if (jenisKib === "mesin") res = await getKibMesin();
+    if (jenisKib === "gedung") res = await getKibGedung();
 
-        setKibList(data);
-      } catch (err) {
-        console.log(err);
-        toast.error("Gagal memuat data KIB");
-      }
-    };
+    console.log("RESPON API:", res);   
+    console.log("ISI DATA:", res.data);
+
+    setKibList(res.data.data);
+  } catch (err) {
+    console.log(err);
+    toast.error("Gagal memuat data KIB");
+  }
+};
+
 
     fetchKib();
   }, [jenisKib]);
@@ -90,7 +96,8 @@ function CreateKir() {
       nilai_perolehan: form.nilai_perolehan,
       nama_barang: selectedKib.nama_barang,
       kode_barang: selectedKib.kode_barang,
-      tanggal_perolehan: selectedKib.tanggal_perolehan || selectedKib.tanggal_perolehan,
+      // tanggal_perolehan: selectedKib.tanggal_perolehan || selectedKib.tanggal_perolehan,
+      tanggal_perolehan: form.tanggal_perolehan,
       gambar: form.gambar
     };
 
@@ -109,6 +116,31 @@ function CreateKir() {
     }
   };
 
+  const displayedKib = search
+  ? kibList.filter(item =>
+      item.nama_barang.toLowerCase().includes(search.toLowerCase()) ||
+      item.kode_barang.toLowerCase().includes(search.toLowerCase())
+    )
+  : kibList.slice(0, 3);
+
+  const highlightText = (text, keyword) => {
+  if (!keyword) return text;
+
+  const regex = new RegExp(`(${keyword})`, "gi");
+  return text.split(regex).map((part, i) =>
+    part.toLowerCase() === keyword.toLowerCase() ? (
+      <span
+        key={i}
+        className="bg-yellow-200 text-yellow-900 font-semibold px-1 rounded"
+      >
+        {part}
+      </span>
+    ) : (
+      part
+    )
+  );
+};
+
   return (
     <main className="p-8 flex-1">
       <h2 className="text-2xl font-bold text-green-700 mb-6 border-b pb-3">
@@ -120,13 +152,14 @@ function CreateKir() {
 
           {/* JENIS KIB */}
           <div>
-            <label className="block text-sm font-medium">Pilih Jenis KIB</label>
+            <label className="block text-sm font-medium text-gray-700">Pilih Jenis KIB</label>
             <select
-              className="mt-1 w-full border rounded-md p-2"
+              className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
               value={jenisKib}
               onChange={(e) => {
                 setJenisKib(e.target.value);
                 setSelectedKib(null);
+                setKibList([]);
               }}
             >
               <option value="">-- pilih --</option>
@@ -138,79 +171,94 @@ function CreateKir() {
 
           {/* KONDISI */}
           <div>
-            <label className="block text-sm font-medium">Kondisi</label>
+            <label className="block text-sm font-medium text-gray-700">Kondisi</label>
             <select
-              className="mt-1 w-full border rounded-md p-2"
+              className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
               value={form.kondisi}
               onChange={(e) => setForm({ ...form, kondisi: e.target.value })}
             >
+              <option value="" disabled>-- Pilih Kondisi --</option>
               <option value="baik">Baik</option>
               <option value="kurang baik">Kurang Baik</option>
               <option value="rusak berat">Rusak Berat</option>
             </select>
           </div>
 
+          
+
+             
           {/* LIST KIB */}
-          {kibList.length > 0 && (
-            <div className="md:col-span-2 border rounded-md p-3 bg-gray-50">
-              <label className="block text-sm font-medium mb-2">
+          {displayedKib.length >= 0 && (
+            <div className="md:col-span-2  rounded-md shadow-md p-3 bg-gray-50">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Pilih KIB
               </label>
+               <div className="mb-3">
+          <input
+            type="text"
+            placeholder="Cari nama / kode barang..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full shadow-sm rounded-md p-2 text-sm"
+          />
+        </div>
+              
 
-              {kibList.map((item) => (
+              {displayedKib.map((item) => (
                 <div
                   key={item.id}
-                  className="flex gap-2 p-2 border rounded-md bg-white mb-2"
+                  className="flex gap-2 p-2 border border-gray-400 rounded-md bg-white mb-2"
                 >
                   <input
                     type="radio"
                     name="kib"
+                    checked={selectedKib?.id === item.id}
                     onChange={() => setSelectedKib(item)}
                   />
                   <div>
                     <p className="font-medium">{item.nama_barang}</p>
                     <p className="text-xs text-gray-600">
-                      Kode: <b>{item.kode_barang}</b>
+                      {highlightText(item.nama_barang, search)}
                     </p>
                   </div>
                   <div>
-                    <p className="font-medium">{item.nama_barang}</p>
+                    <p className="font-medium">(<b>{highlightText(item.kode_barang, search)}</b> )</p>
                     <p className="text-xs text-gray-600">
-                      Tanggal Perolehan: <b>{item.tanggal_perolehan}</b>
+                      {/* Tanggal Perolehan: <b>{item.tanggal_perolehan}</b> */}
                     </p>
                   </div>
                 </div>
               ))}
+               {!search && kibList.length > 0 && (
+      <p className="text-xs text-gray-500 mt-2 text-center">
+        Menampilkan 3 data awal, gunakan pencarian untuk melihat lainnya
+      </p>
+    )}
             </div>
           )}
 
           {/* LOKASI */}
           <div>
-            <label className="block text-sm font-medium">Lokasi</label>
-            <input
-              className="mt-1 w-full border rounded-md p-2"
-              value={form.lokasi}
+            <label className="block text-sm font-medium text-gray-700">Lokasi</label>
+            <select
+              className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300 bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              value={form.lokasi || ''} // Menggunakan || '' untuk mencegah error 'uncontrolled input'
               onChange={(e) => setForm({ ...form, lokasi: e.target.value })}
-            />
+            >
+              <option value="" disabled>Pilih Lokasi</option>
+              <option value="Gudang A">Gudang A</option>
+              <option value="Gudang B">Gudang B</option>
+              <option value="Kantor Pusat">Kantor Pusat</option>
+              <option value="Ruang IT">Ruang IT</option>
+            </select>
           </div>
-
-          {/* JUMLAH & NILAI */}
-          <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Tanggal</label>
             <input
-              type="number"
-              placeholder="Jumlah"
-              className="border p-2 rounded-md"
-              value={form.jumlah}
-              onChange={(e) => setForm({ ...form, jumlah: e.target.value })}
-            />
-            <input
-              type="number"
-              placeholder="Nilai Perolehan"
-              className="border p-2 rounded-md"
-              value={form.nilai_perolehan}
-              onChange={(e) =>
-                setForm({ ...form, nilai_perolehan: e.target.value })
-              }
+            type="date"
+              className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
+              value={form.tanggal_perolehan}
+              onChange={(e) => setForm({ ...form, tanggal_perolehan: e.target.value })}
             />
           </div>
 
@@ -264,12 +312,39 @@ function CreateKir() {
                 />
               </div>
 
+
+                  {/* JUMLAH & NILAI */}
+          <div className="flex gap-2 items-center">
+          <div className="">
+             <label className="block text-sm font-medium text-gray-700">jumlah</label>
+            <input
+              type="number"
+              placeholder="Jumlah"
+              className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
+              value={form.jumlah}
+              onChange={(e) => setForm({ ...form, jumlah: e.target.value })}
+            />
+            
+          </div>
+          <div>
+             <label className="block text-sm font-medium text-gray-700">Nilai Perolehan</label>
+            <input
+              type="number"
+              placeholder="Nilai Perolehan"
+              className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
+              value={form.nilai_perolehan}
+              onChange={(e) =>
+                setForm({ ...form, nilai_perolehan: e.target.value })
+              }
+            />
+          </div>
+          </div>
           
 
         </div>
         {/* BUTTON */}
-          <div className="flex gap-3">
-            <Link to="/kir" className="px-4 py-2 border rounded-md">
+          <div className="flex gap-3 justify-end">
+            <Link to="/kir" className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm text-gray-700 hover:bg-gray-200">
               Kembali
             </Link>
             <button className="px-4 py-2 bg-green-600 text-white rounded-md">

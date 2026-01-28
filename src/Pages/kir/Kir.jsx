@@ -1,8 +1,9 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { useEffect } from "react"
-import { getKir } from "../../services/KirService"
+import { deleteKir, getKir } from "../../services/KirService"
 import { toast } from "react-toastify"
+import {formatRupiah, formatTanggal} from "../../utils/Format"
 
 function Kir() {
     const [data, setData] = useState([]);
@@ -32,6 +33,24 @@ function Kir() {
     fetchData(currentPage);
   }, [currentPage, search]);
 
+   const handleDelete = async (id) => {
+  const confirm = window.confirm("Yakin ingin menghapus data ini?");
+
+  if (!confirm) return;
+
+  try {
+    await deleteKir(id);
+
+    toast.success("Data berhasil dihapus");
+
+    // refresh data
+    setData((prev) => prev.filter((item) => item.id !== id));
+
+  } catch (error) {
+    console.log(error);
+    toast.error("Gagal menghapus data");
+  }
+};
   
   return (
     <>
@@ -100,15 +119,20 @@ function Kir() {
                                     <td className="border-r border-gray-100 px-3 py-3 text-center">{index + 1}</td>
                                     <td className="border-r border-gray-100 px-3 py-3">{item.kode_barang}</td>
                                     <td className="border-r border-gray-100 px-3 py-3 text-center font-mono">{item.nama_barang}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3 text-center">{item.tanggal_perolehan}</td>
+                                    <td className="border-r border-gray-100 px-3 py-3 text-center">{formatTanggal(item.tanggal_perolehan)}</td>
                                     <td className="border-r border-gray-100 px-3 py-3 text-center font-semibold">
                                       <span
-                                            className="px-2 py-0.5 rounded-full text-xs font-medium text-green-500"> 
+                                            className="px-2 py-0.5 rounded-full text-xs font-medium text-black"> 
                                             {item.lokasi}
                                         </span></td>
-                                    <td className="border-r border-gray-100 px-3 py-3 text-center">{item.kondisi}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3 text-center font-bold">{item.jumlah}</td>
-                                    <td className="border-r border-gray-100 px-3 py-3 text-center font-bold">{item.nilai_perolehan}</td>
+                                    <td className={`border-r border-gray-100 px-3 py-3 text-center font-semibold ${
+                                        item.kondisi === 'baik' ? 'text-green-600' : 
+                                        item.kondisi === 'rusak berat' ? 'text-red-600' : 
+                                        item.kondisi === 'kurang baik' ? 'text-yellow-600' :
+                                        'text-gray-800'
+                                        }`}>{item.kondisi}</td>
+                                    <td className="border-r border-gray-100 px-3 py-3 text-center">{item.jumlah}</td>
+                                    <td className="border-r border-gray-100 px-3 py-3 text-center">Rp. {formatRupiah(item.nilai_perolehan)}</td>
                                     <td className="border-r border-gray-100 px-3 py-3 text-center">
                                         <div className="inline-flex flex-col items-center">
                                                   {item.gambar_qr ? (
@@ -140,7 +164,7 @@ function Kir() {
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                                 </svg>
                                             </Link>
-                                            <button className="text-red-600 hover:text-red-800">
+                                            <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-800 cursor-pointer">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-5 w-5">
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                                                 </svg>
