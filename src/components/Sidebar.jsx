@@ -79,7 +79,7 @@ export default function Sidebar({ sidebarRef, backdropRef, toggleSidebar }) {
               className="w-full flex justify-between items-center px-3 py-2 rounded-lg
                          font-semibold text-gray-300 hover:bg-white/10"
             >
-              <span className="flex gap-3">📦 Data KIB</span>
+              <span className="flex gap-3">📦 Inventaris Barang</span>
               <span id="kibArrow" className="transition-transform">⌄</span>
             </button>
             <div
@@ -98,7 +98,7 @@ export default function Sidebar({ sidebarRef, backdropRef, toggleSidebar }) {
             </div>
             {/* Menu Data KIR */}
              <NavLink to="/kir" onClick={toggleSidebar} className={linkClass}>
-              🗳️ Data Kir
+              🗳️ Data Ruangan
             </NavLink>
             {/* Menu Data label */}
              <NavLink to="/cetak-label" onClick={toggleSidebar} className={linkClass}>
@@ -107,6 +107,14 @@ export default function Sidebar({ sidebarRef, backdropRef, toggleSidebar }) {
             {/* Menu Data laporan */}
              <NavLink to="/laporan" onClick={toggleSidebar} className={linkClass}>
               📓 Laporan
+            </NavLink>
+            {/* Menu Data laporan */}
+             <NavLink to="/laporan" onClick={toggleSidebar} className={linkClass}>
+              🧾 Integritas
+            </NavLink>
+            {/* Menu Data laporan */}
+             <NavLink to="/berita-acara" onClick={toggleSidebar} className={linkClass}>
+              🔖 Berita Acara
             </NavLink>
           </nav>
         </div>

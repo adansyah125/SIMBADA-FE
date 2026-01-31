@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 import { createKir } from "../../services/KirService";
 import { getKibTanah } from "../../services/KibTanahService";
-import { getKibMesin } from "../../services/KibMesinService";
+import { getAllKibMesin } from "../../services/KibMesinService";
 import { getKibGedung } from "../../services/KibGedungService";
 
 function CreateKir() {
@@ -12,7 +12,7 @@ function CreateKir() {
 
   const [jenisKib, setJenisKib] = useState("");
   const [kibList, setKibList] = useState([]);
-  const [selectedKib, setSelectedKib] = useState(null);
+  const [selectedKib, setSelectedKib] = useState([]);
   const [search, setSearch] = useState("");
 
   const [previewImage, setPreviewImage] = useState(null);
@@ -61,13 +61,11 @@ function CreateKir() {
     let res;
 
     if (jenisKib === "tanah") res = await getKibTanah();
-    if (jenisKib === "mesin") res = await getKibMesin();
+    if (jenisKib === "mesin") res = await getAllKibMesin();
     if (jenisKib === "gedung") res = await getKibGedung();
 
-    console.log("RESPON API:", res);   
-    console.log("ISI DATA:", res.data);
-
-    setKibList(res.data.data);
+    const data = res.data?.data ?? res.data ?? [];
+      setKibList(Array.isArray(data) ? data : []);
   } catch (err) {
     console.log(err);
     toast.error("Gagal memuat data KIB");
@@ -84,44 +82,52 @@ function CreateKir() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!selectedKib) {
-      toast.warning("Pilih salah satu KIB");
-      return;
-    }
+    if (selectedKib.length === 0) {
+  toast.warning("Pilih minimal satu KIB");
+  return;
+}
 
+    try {
+  for (const item of selectedKib) {
     const payload = {
       lokasi: form.lokasi,
       kondisi: form.kondisi,
       jumlah: form.jumlah,
       nilai_perolehan: form.nilai_perolehan,
-      nama_barang: selectedKib.nama_barang,
-      kode_barang: selectedKib.kode_barang,
-      // tanggal_perolehan: selectedKib.tanggal_perolehan || selectedKib.tanggal_perolehan,
       tanggal_perolehan: form.tanggal_perolehan,
-      gambar: form.gambar
+      gambar: form.gambar,
+      nama_barang: item.nama_barang,
+      kode_barang: item.kode_barang,
     };
 
-    // set foreign key sesuai jenis
-    if (jenisKib === "tanah") payload.tanah_id = selectedKib.id;
-    if (jenisKib === "mesin") payload.mesin_id = selectedKib.id;
-    if (jenisKib === "gedung") payload.gedung_id = selectedKib.id;
+    if (jenisKib === "tanah") payload.tanah_id = item.id;
+    if (jenisKib === "mesin") payload.mesin_id = item.id;
+    if (jenisKib === "gedung") payload.gedung_id = item.id;
 
-    try {
-      await createKir(payload);
-      toast.success("Data KIR berhasil disimpan");
-      navigate("/kir");
-    } catch (err) {
-      console.log(err);
-      toast.error("Gagal menyimpan data KIR");
-    }
+    await createKir(payload);
+  }
+
+  toast.success("Semua data KIR berhasil disimpan");
+  navigate("/kir");
+} catch (err) {
+  console.log(err);
+  toast.error("Sebagian / semua data gagal disimpan");
+}
+
   };
 
-  const displayedKib = search
+  const keyword = search.trim().toLowerCase();
+
+const displayedKib = keyword
   ? kibList.filter(item =>
-      item.nama_barang.toLowerCase().includes(search.toLowerCase()) ||
-      item.kode_barang.toLowerCase().includes(search.toLowerCase())
+      String(item.nama_barang).toLowerCase().includes(keyword) ||
+      String(item.kode_barang).toLowerCase().includes(keyword) 
+      // String(item.merk).toLowerCase().includes(keyword) ||
+      // String(item.no_polisi).toLowerCase().includes(keyword) ||
+      // String(item.no_rangka).toLowerCase().includes(keyword) ||
+      // String(item.no_bpkb).toLowerCase().includes(keyword)
     )
-  : kibList.slice(0, 3);
+  : kibList.slice(0, 5);
 
   const highlightText = (text, keyword) => {
   if (!keyword) return text;
@@ -141,6 +147,21 @@ function CreateKir() {
   );
 };
 
+const toggleKib = (item) => {
+  setSelectedKib((prev) => {
+    const exists = prev.find(k => k.id === item.id);
+
+    if (exists) {
+      // hapus kalau sudah dipilih
+      return prev.filter(k => k.id !== item.id);
+    } else {
+      // tambah kalau belum
+      return [...prev, item];
+    }
+  });
+};
+
+
   return (
     <main className="p-8 flex-1">
       <h2 className="text-2xl font-bold text-green-700 mb-6 border-b pb-3">
@@ -158,7 +179,7 @@ function CreateKir() {
               value={jenisKib}
               onChange={(e) => {
                 setJenisKib(e.target.value);
-                setSelectedKib(null);
+                setSelectedKib([]);
                 setKibList([]);
               }}
             >
@@ -172,68 +193,59 @@ function CreateKir() {
           {/* KONDISI */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Kondisi</label>
-            <select
-              className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
+            <select className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
               value={form.kondisi}
-              onChange={(e) => setForm({ ...form, kondisi: e.target.value })}
-            >
+              onChange={(e) => setForm({ ...form, kondisi: e.target.value })}>
               <option value="" disabled>-- Pilih Kondisi --</option>
               <option value="baik">Baik</option>
               <option value="kurang baik">Kurang Baik</option>
               <option value="rusak berat">Rusak Berat</option>
             </select>
           </div>
-
-          
-
-             
+  
           {/* LIST KIB */}
           {displayedKib.length >= 0 && (
             <div className="md:col-span-2  rounded-md shadow-md p-3 bg-gray-50">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Pilih KIB
+              <label className="block text-sm font-medium text-gray-700 mb-2"> Pilih KIB
               </label>
                <div className="mb-3">
-          <input
-            type="text"
-            placeholder="Cari nama / kode barang..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full shadow-sm rounded-md p-2 text-sm"
-          />
-        </div>
-              
-
-              {displayedKib.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex gap-2 p-2 border border-gray-400 rounded-md bg-white mb-2"
-                >
-                  <input
-                    type="radio"
-                    name="kib"
-                    checked={selectedKib?.id === item.id}
-                    onChange={() => setSelectedKib(item)}
-                  />
-                  <div>
-                    <p className="font-medium">{item.nama_barang}</p>
-                    <p className="text-xs text-gray-600">
-                      {highlightText(item.nama_barang, search)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="font-medium">(<b>{highlightText(item.kode_barang, search)}</b> )</p>
-                    <p className="text-xs text-gray-600">
-                      {/* Tanggal Perolehan: <b>{item.tanggal_perolehan}</b> */}
-                    </p>
-                  </div>
+                <input type="text" placeholder="Cari nama / kode barang..." className="w-full shadow-sm rounded-md p-2 text-sm"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}/>
                 </div>
-              ))}
-               {!search && kibList.length > 0 && (
-      <p className="text-xs text-gray-500 mt-2 text-center">
-        Menampilkan 3 data awal, gunakan pencarian untuk melihat lainnya
+              
+             {displayedKib.map((item) => (
+  <div
+    key={item.id}
+    className={`flex gap-2 p-2 border rounded-md bg-white mb-2
+      ${selectedKib.some(k => k.id === item.id)
+        ? "border-green-500 bg-green-50"
+        : "border-gray-400"}
+    `}
+  >
+    <input
+      type="checkbox"
+      checked={selectedKib.some(k => k.id === item.id)}
+      onChange={() => toggleKib(item)}
+    />
+
+    <div className="flex-1">
+      <p className="font-medium">
+        {highlightText(item.nama_barang, search)}
       </p>
-    )}
+      <p className="text-xs text-gray-600">
+        Kode: <b>{highlightText(item.kode_barang, search)}</b>
+      </p>
+    </div>
+  </div>
+))}
+
+               {search && displayedKib.length === 0 && (
+  <p className="text-sm text-gray-500 text-center">
+    Data tidak ditemukan
+  </p>
+)}
+
             </div>
           )}
 
@@ -312,7 +324,6 @@ function CreateKir() {
                 />
               </div>
 
-
                   {/* JUMLAH & NILAI */}
           <div className="flex gap-2 items-center">
           <div className="">
@@ -340,7 +351,6 @@ function CreateKir() {
           </div>
           </div>
           
-
         </div>
         {/* BUTTON */}
           <div className="flex gap-3 justify-end">

@@ -87,37 +87,98 @@ function KibTanah() {
   }
 };
 
+const exportPdf = () => {
+  window.open(`${import.meta.env.VITE_API_URL}/kib-tanah/export/pdf`);
+};
+
+const exportExcel = () => {
+  window.open(`${import.meta.env.VITE_API_URL}/kib-tanah/export/excel`);
+};
+
   return (
       <>
             {/* HEADER */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end pb-6 border-b border-gray-100 mb-4">
-                <div>
+            <div className="flex flex-col md:flex-row justify-between items-center md:items-end pb-6 border-b border-gray-100 mb-4">
+                <div className='block mb-10'>
                     <h1 className="text-2xl md:text-4xl font-light text-gray-900 tracking-tighter">
                         Data Kartu Inventaris <span className="font-semibold tracking-tighter text-black uppercase">Tanah</span>
                     </h1>
                     <p className="text-gray-500 mt-2 text-sm italic">Kelola data aset inventaris negara (KIB/KIR).</p>
                 </div>
-            </div>
+               <div className="flex gap-4 p-4">
+                    {/* Tombol Export PDF */}
+                    <button onClick={exportPdf} type="button" className="group relative flex flex-col items-center justify-center w-40 h-32 border-2 border-dashed border-rose-300 rounded-xl bg-rose-50 hover:bg-rose-100 hover:border-rose-500 transition-all duration-300 cursor-pointer">
+                        <div className="p-3 bg-white rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-8 h-8 text-rose-600">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                        </svg>
+                        </div>
+                        <span className="mt-2 text-xs font-bold text-rose-700 uppercase tracking-wider">Export PDF</span>
+                        {/* Dekorasi kecil untuk efek UX */}
+                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="w-2 h-2 bg-rose-500 rounded-full animate-ping"></div>
+                        </div>
+                    </button>
 
-            {/* SEARCH & ADD */}
-            <div className="flex flex-col md:flex-row items-center  gap-3 mb-5">
-                <input type="text" placeholder="Cari (Nama, kode Barang)..." 
-                value={search}
-                onChange={(e) => {
+                    {/* Tombol Export Excel */}
+                    <button onClick={exportExcel} type="button" className="group relative flex flex-col items-center justify-center w-40 h-32 border-2 border-dashed border-emerald-300 rounded-xl bg-emerald-50 hover:bg-emerald-100 hover:border-emerald-500 transition-all duration-300 cursor-pointer">
+                        <div className="p-3 bg-white rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-8 h-8 text-emerald-600">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125h-7.5c-.621 0-1.125-.504-1.125-1.125m0 1.125v-1.5c0-.621.504-1.125 1.125-1.125m0 0h7.5m-7.5 0V5.625m0 0c0-.621.504-1.125 1.125-1.125h6.375c.621 0 1.125.504 1.125 1.125v1.5m-8.625-1.5H3.375m0 0c-.621 0-1.125.504-1.125 1.125v1.5m1.125-1.5h7.5" />
+                        </svg>
+                        </div>
+                        <span className="mt-2 text-xs font-bold text-emerald-700 uppercase tracking-wider">Export Excel</span>
+                    </button>
+                    </div>
+                </div>
+
+            {/* SEARCH & ADD SECTION */}
+            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                
+                {/* Search Bar dengan Ikon */}
+                <div className="relative group w-full lg:w-96">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 group-focus-within:text-indigo-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <input type="text" placeholder="Cari Nama atau Kode Barang..." 
+                    value={search}
+                    onChange={(e) => {
                     setSearch(e.target.value);
                     setCurrentPage(1);
-                }}
-                className="px-4 py-2 w-full md:w-96 rounded-lg border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 text-sm"/>
-                <div className='ml-auto flex gap-2'>
-                <Link to={"/kib/tanah/create"} className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition text-sm whitespace-nowrap">+ Tambah Data</Link>
-                 <button type="button" onClick={() => setShowImportModal(true)} className="px-4 py-2 inline-flex gap-1 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition text-sm whitespace-nowrap cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-5 w-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                    </svg> Import Data
-                </button>
-                {/* INPUT FILE HIDDEN */}
-                <input type="file" accept=".xlsx,.xls" ref={fileInputRef} onChange={importDataExcel} className="hidden border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 text-sm"/>
+                    }}
+                    className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200"/>
                 </div>
+
+                {/* Action Buttons */}
+                <div className="flex items-center gap-3">
+                {/* Import Data - Secondary Action */}
+                <button type="button" 
+                    onClick={() => setShowImportModal(true)} 
+                    className="flex items-center gap-2 px-4 py-2.5 bg-white text-emerald-600 border border-emerald-200 rounded-lg hover:bg-emerald-50 hover:border-emerald-300 active:scale-95 transition-all duration-200 text-sm font-semibold cursor-pointer shadow-sm" >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="h-4 w-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                    </svg>
+                    <span>Import Excel</span>
+                </button>
+
+                {/* Tambah Data - Primary Action */}
+                <Link to={"/kib/tanah/create"} className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:scale-95 transition-all duration-200 text-sm font-semibold shadow-md shadow-indigo-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="h-4 w-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    <span>Tambah Data</span>
+                </Link>
+                </div>
+
+                {/* Hidden Input File */}
+                <input type="file" accept=".xlsx,.xls" 
+                ref={fileInputRef} 
+                onChange={importDataExcel} 
+                className="hidden"/>
+            </div>
             </div>
 
             {/* TABLE - Desktop */}

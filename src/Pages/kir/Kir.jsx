@@ -64,21 +64,47 @@ function Kir() {
                     </div>
                 </div>
         {/* SEARCH & ADD */}
-            <div className="flex flex-col md:flex-row gap-3 mb-5">
-                <input 
-                    type="text"
-                    placeholder="Cari data (Nama, Kode, Lokasi)..."
-                    value={search}
-                    onChange={(e) => {
-                    setSearch(e.target.value);
-                    setCurrentPage(1);
-                }}
-                    className="px-4 py-2 w-full md:w-96 rounded-lg border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 text-sm"
-                />
-                <Link to={"/kir/create"} className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm whitespace-nowrap hover:bg-indigo-700 transition ml-auto">
-                    + Tambah Data
-                </Link>
-            </div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        
+                        {/* Search Bar dengan Ikon */}
+                        <div className="relative group w-full lg:w-96">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 group-focus-within:text-indigo-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <input type="text" placeholder="Cari Nama atau Kode Barang..." 
+                            value={search}
+                            onChange={(e) => {
+                            setSearch(e.target.value);
+                            setCurrentPage(1);
+                            }}
+                            className="block w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all duration-200"/>
+                        </div>
+        
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-3">
+                        {/* Import Data - Secondary Action */}
+                        <Link to={"/kir/ruangan"}
+                            className="flex items-center gap-2 px-4 py-2.5 bg-white text-emerald-600 border border-emerald-200 rounded-lg hover:bg-emerald-50 hover:border-emerald-300 active:scale-95 transition-all duration-200 text-sm font-semibold cursor-pointer shadow-sm" >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" />
+                            </svg>
+
+                            <span>Lihat Ruangan</span>
+                        </Link>
+        
+                        {/* Tambah Data - Primary Action */}
+                        <Link to={"/kir/create"} className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:scale-95 transition-all duration-200 text-sm font-semibold shadow-md shadow-indigo-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="h-4 w-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                            <span>Tambah Data</span>
+                        </Link>
+                        </div>
+                    </div>
+                    </div>
 
             {/* TABLE - Desktop View */}
             <div className="hidden md:block overflow-x-auto border border-gray-200 rounded-lg">

@@ -1,7 +1,7 @@
 import api from "../lib/axios";
 
 export const getKibGedung = async (page = 1, search = "") => {
-  const response = await api.get(`/kib-gedung?page=${page}&seacrh=${search}`);
+  const response = await api.get(`/kib-gedung?page=${page}&search=${search}`);
   return response.data; // ⬅️ unwrap di sini
 };
 

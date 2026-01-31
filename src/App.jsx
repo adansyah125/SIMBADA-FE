@@ -25,10 +25,14 @@ import Kir from "./Pages/kir/Kir";
 import CreateKir from "./Pages/kir/CreateKir";
 import EditKir from "./Pages/kir/EditKir";
 import ScanLabel from "./Pages/ScanLabel";
+import Ruangan from "./Pages/kir/Ruangan";
 
 import CetakLabel from "./pages/CetakLabel";
 import Laporan from "./Pages/laporan/Laporan";
 import EditMesin from "./Pages/mesin/EditMesin";
+
+import Berita from "./Pages/Informasi/Berita";
+
 
 export default function App() {
   const sidebarRef = useRef(null);
@@ -69,17 +73,24 @@ export default function App() {
                       <Route path="/kib/tanah" element={<KibTanah />} />
                       <Route path="/kib/tanah/create" element={<CreateTanah />} />
                       <Route path="/kib/tanah/edit/:id/edit" element={<EditTanah />} />
+
                       <Route path="/kib/gedung" element={<KibGedung />} />
                       <Route path="/kib/gedung/create" element={<CreateGedung />} />
                       <Route path="/kib/gedung/edit/:id/edit" element={<EditGedung />} />
+
                       <Route path="/kib/mesin" element={<KibMesin />} />
                       <Route path="/kib/mesin/create" element={<CreateMesin />} />
                       <Route path="/kib/mesin/edit/:id/edit" element={<EditMesin />} />
+
                       <Route path="/kir" element={<Kir />} />
                       <Route path="/kir/create" element={<CreateKir />} />
                       <Route path="/kir/edit/:id/edit" element={<EditKir />} />
+                      <Route path="/kir/ruangan" element={<Ruangan />} />
+
                       <Route path="/cetak-label" element={<CetakLabel />} />
                       <Route path="/laporan" element={<Laporan />} />
+
+                      <Route path="/berita-acara" element={<Berita />} />
                     </Routes>
                   </main>
                 </div>
