@@ -31,8 +31,7 @@ import CetakLabel from "./pages/CetakLabel";
 import Laporan from "./Pages/laporan/Laporan";
 import EditMesin from "./Pages/mesin/EditMesin";
 
-import Berita from "./Pages/Informasi/Berita";
-
+import Integritas from "./Pages/Informasi/Integritas";
 
 export default function App() {
   const sidebarRef = useRef(null);
@@ -90,7 +89,7 @@ export default function App() {
                       <Route path="/cetak-label" element={<CetakLabel />} />
                       <Route path="/laporan" element={<Laporan />} />
 
-                      <Route path="/berita-acara" element={<Berita />} />
+                      <Route path="/integritas" element={<Integritas />} />
                     </Routes>
                   </main>
                 </div>
