@@ -23,7 +23,6 @@ function KibGedung() {
             setCurrentPage(paginate.current_page);
             setLastPage(paginate.last_page);
             setTotal(paginate.total);
-            console.log(paginate)
         } catch (err){
             console.log(err);
             toast.error("Gagal mengambil data KIB Gedung");

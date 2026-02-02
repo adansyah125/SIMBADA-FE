@@ -26,7 +26,7 @@ export const deleteKibGedung = async (id) => {
 };
 
 export const importExcel = async (payload) => {
-  console.log([...payload.entries()]);
+  // console.log([...payload.entries()]);
   const res = await api.post("/kib-gedung/import", payload, {
     headers: {
       "Content-Type": "multipart/form-data",

@@ -31,7 +31,7 @@ export const deleteKibMesin = async (id) => {
 };
 
 export const importExcel = async (payload) => {
-  console.log([...payload.entries()]);
+  // console.log([...payload.entries()]);
   const res = await api.post("/kib-mesin/import", payload, {
     headers: {
       "Content-Type": "multipart/form-data",

@@ -159,10 +159,19 @@ function EditKir() {
             className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300 bg-white focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="" disabled>-- Pilih Lokasi --</option>
-            <option value="Gudang A">Gudang A</option>
-            <option value="Gudang B">Gudang B</option>
-            <option value="Kantor Pusat">Kantor Pusat</option>
-            <option value="Ruang IT">Ruang IT</option>
+            <option value="Sekretariat Camat">Sekretariat Camat</option>
+              <option value="Kasi Pemerintah">Kasi Pemerintah</option>
+              <option value="Kasi Pemberdayaan Masyarakat">Kasi Pemberdayaan Masyarakat</option>
+              <option value="Ruang Comend Center">Ruang Comend Center</option>
+              <option value="Kasubag Umum Kepegawaian data informasi">Kasubag Umum Kepegawaian data informasi</option>
+              <option value="Kasi ketentraman dan ketertiban">Kasi ketentraman dan ketertiban</option>
+              <option value="Kasubag program dan keuanganr">Kasubag program dan keuangan</option>
+              <option value="Ruang Pelayanan">Ruang Pelayanan</option>
+              <option value="Ruang Tengah">Ruang Tengah</option>
+              <option value="Ruang arsip">Ruang arsip</option>
+              <option value="Ruang ibu menyusui">Ruang ibu menyusui</option>
+              <option value="Kasi ekonomi dan pembangunan">Kasi ekonomi dan pembangunan</option>
+              <option value="Ruang Aula">Ruang Aula</option>
           </select>
         </div>
           <div>

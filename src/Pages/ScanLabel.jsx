@@ -15,7 +15,7 @@ function ScanLabel() {
       });
       setKir(response.data.data);
     } catch (error) {
-      console.error('Gagal mengambil data KIR:', error);
+      console.error('Data Tidak ditemukan:', error);
     } finally {
       setLoading(false);
     }

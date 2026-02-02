@@ -121,11 +121,11 @@ function CreateKir() {
 const displayedKib = keyword
   ? kibList.filter(item =>
       String(item.nama_barang).toLowerCase().includes(keyword) ||
-      String(item.kode_barang).toLowerCase().includes(keyword) 
-      // String(item.merk).toLowerCase().includes(keyword) ||
-      // String(item.no_polisi).toLowerCase().includes(keyword) ||
-      // String(item.no_rangka).toLowerCase().includes(keyword) ||
-      // String(item.no_bpkb).toLowerCase().includes(keyword)
+      String(item.kode_barang).toLowerCase().includes(keyword) ||
+      String(item.merk).toLowerCase().includes(keyword) ||
+      String(item.no_polisi).toLowerCase().includes(keyword) ||
+      String(item.no_rangka).toLowerCase().includes(keyword) ||
+      String(item.no_bpkb).toLowerCase().includes(keyword)
     )
   : kibList.slice(0, 5);
 
@@ -258,10 +258,19 @@ const toggleKib = (item) => {
               onChange={(e) => setForm({ ...form, lokasi: e.target.value })}
             >
               <option value="" disabled>Pilih Lokasi</option>
-              <option value="Gudang A">Gudang A</option>
-              <option value="Gudang B">Gudang B</option>
-              <option value="Kantor Pusat">Kantor Pusat</option>
-              <option value="Ruang IT">Ruang IT</option>
+              <option value="Sekretariat Camat">Sekretariat Camat</option>
+              <option value="Kasi Pemerintah">Kasi Pemerintah</option>
+              <option value="Kasi Pemberdayaan Masyarakat">Kasi Pemberdayaan Masyarakat</option>
+              <option value="Ruang Comend Center">Ruang Comend Center</option>
+              <option value="Kasubag Umum Kepegawaian data informasi">Kasubag Umum Kepegawaian data informasi</option>
+              <option value="Kasi ketentraman dan ketertiban">Kasi ketentraman dan ketertiban</option>
+              <option value="Kasubag program dan keuanganr">Kasubag program dan keuangan</option>
+              <option value="Ruang Pelayanan">Ruang Pelayanan</option>
+              <option value="Ruang Tengah">Ruang Tengah</option>
+              <option value="Ruang arsip">Ruang arsip</option>
+              <option value="Ruang ibu menyusui">Ruang ibu menyusui</option>
+              <option value="Kasi ekonomi dan pembangunan">Kasi ekonomi dan pembangunan</option>
+              <option value="Ruang Aula">Ruang Aula</option>
             </select>
           </div>
           <div>

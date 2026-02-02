@@ -109,7 +109,7 @@ export default function Sidebar({ sidebarRef, backdropRef, toggleSidebar }) {
               📓 Laporan
             </NavLink>
             {/* Menu Data laporan */}
-             <NavLink to="/laporan" onClick={toggleSidebar} className={linkClass}>
+             <NavLink to="/berita" onClick={toggleSidebar} className={linkClass}>
               🔖 Berita Acara
             </NavLink>
             {/* Menu Data laporan */}

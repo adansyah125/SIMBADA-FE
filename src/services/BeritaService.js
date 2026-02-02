@@ -10,7 +10,7 @@ export const createBerita = async (payload) => {
   return res.data.data;
 };
 
-export const deletBerita = async (id) => {
+export const deleteBerita = async (id) => {
   const res = await api.delete(`/berita/${id}`);
   return res.data;
 };

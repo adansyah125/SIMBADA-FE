@@ -32,6 +32,7 @@ import Laporan from "./Pages/laporan/Laporan";
 import EditMesin from "./Pages/mesin/EditMesin";
 
 import Integritas from "./Pages/Informasi/Integritas";
+import Berita from "./Pages/Informasi/Berita";
 
 export default function App() {
   const sidebarRef = useRef(null);
@@ -90,6 +91,7 @@ export default function App() {
                       <Route path="/laporan" element={<Laporan />} />
 
                       <Route path="/integritas" element={<Integritas />} />
+                      <Route path="/berita" element={<Berita />} />
                     </Routes>
                   </main>
                 </div>

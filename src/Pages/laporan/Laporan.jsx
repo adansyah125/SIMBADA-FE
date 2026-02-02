@@ -18,7 +18,6 @@ function Laporan() {
           { nama: 'Mesin', ...res.data.mesin },
         ])
         setLoading(false)
-        console.log(res.data)
       })
       .catch(err => {
         console.error(err)
@@ -68,9 +67,9 @@ function Laporan() {
             <img src="/logo.png" alt="Logo" className="w-20 h-20 rounded-full object-cover" />
           </div>
           <div>
-            <p className="text-xs text-gray-600">KEMENTERIAN/LEMBAGA REPUBLIK INDONESIA</p>
+            <p className="text-xs text-gray-600">PEMERINTAH KOTA BANDUNG</p>
             <h2 className="text-2xl font-extrabold text-blue-900 mt-1 mb-1">LAPORAN INVENTARIS KECAMATAN BANDUNG KIDUL</h2>
-            <p className="text-sm text-gray-500"> JL. Ters. Batununggal No.28 Bandung Kode Pos 402627 87304246</p>
+            <p className="text-sm text-gray-500"> JL. Batununggal No.28 Bandung Kode Pos 402627 87523214</p>
           </div>
         </div>
 

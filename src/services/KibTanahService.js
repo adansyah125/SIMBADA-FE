@@ -7,7 +7,6 @@ export const getKibTanah = async (page = 1, search = "") => {
 
 export const createKibTanah = async (payload) => {
   const res = await api.post("/kib-tanah", payload);
-
   return res.data.data;
 };
 export const getTanahById = async (id) => {
@@ -26,7 +25,7 @@ export const deleteKibTanah = async (id) => {
 };
 
 export const importExcel = async (payload) => {
-  console.log([...payload.entries()]);
+  // console.log([...payload.entries()]);
   const res = await api.post("/kib-tanah/import", payload, {
     headers: {
       "Content-Type": "multipart/form-data",
