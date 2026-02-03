@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getToken } from "../utils/Auth";
+import { getToken } from "../utils/auth";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -20,7 +20,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // interceptor: jika token expired
@@ -32,7 +32,7 @@ api.interceptors.response.use(
       window.location.href = "/";
     }
     return Promise.reject(err);
-  }
+  },
 );
 
 export default api;
