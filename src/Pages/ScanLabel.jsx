@@ -10,7 +10,7 @@ function ScanLabel() {
 
   const fetchKir = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/kir/${id}`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/kir/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setKir(response.data.data);
