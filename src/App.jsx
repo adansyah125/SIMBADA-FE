@@ -27,7 +27,7 @@ import EditKir from "./Pages/kir/EditKir";
 import ScanLabel from "./Pages/ScanLabel";
 import Ruangan from "./Pages/kir/Ruangan";
 
-import CetakLabel from "./pages/CetakLabel";
+import CetakLabel from "./Pages/CetakLabel";
 import Laporan from "./Pages/laporan/Laporan";
 import EditMesin from "./Pages/mesin/EditMesin";
 
