@@ -6,7 +6,7 @@ function Laporan() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/api/laporan/rekap-aset`, {
+    axios.get(`${import.meta.env.VITE_API_URL}/laporan/rekap-aset`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
