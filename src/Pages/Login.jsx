@@ -1,7 +1,7 @@
 import { useState,useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { login } from "../services/AuthService"
-import { setAuth } from "../utils/Auth"
+import { login } from "../services/authService"
+import { setAuth } from "../utils/auth"
 import { toast } from "react-toastify";
 function Login() {
   const navigate = useNavigate();
