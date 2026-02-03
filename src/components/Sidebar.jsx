@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { logout } from "../utils/Auth";
+import { logout } from "../utils/auth";
 
 export default function Sidebar({ sidebarRef, backdropRef, toggleSidebar }) {
   const toggleDropdown = (menuId, arrowId) => {
