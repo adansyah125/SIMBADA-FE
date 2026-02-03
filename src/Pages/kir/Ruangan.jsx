@@ -8,7 +8,7 @@ function Ruangan() {
   const [dataLokasi, setDataLokasi] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/kir/lokasi")
+    axios.get(`${import.meta.env.VITE_API_URL}/kir/lokasi`)
       .then(res => {
         setDataLokasi(res.data);
         if (res.data.length > 0) {
