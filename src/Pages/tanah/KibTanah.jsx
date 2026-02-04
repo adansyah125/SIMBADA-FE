@@ -318,7 +318,7 @@ const exportExcel = () => {
                                 {/* Section: Perolehan */}
                                 <section>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Data Perolehan</p>
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-2 gap-3">
                                         <div>
                                             <label className="block text-[10px] text-gray-500 mb-0.5">Harga Satuan</label>
                                             <p className="text-sm font-semibold text-emerald-600">Rp {formatRupiah(item.harga_satuan)}</p>

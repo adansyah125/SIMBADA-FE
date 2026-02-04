@@ -101,79 +101,147 @@ function EditTanah() {
   }
 
   return (
-    <main className="p-8 flex-1">
-      <h2 className="text-2xl font-bold text-yellow-600 mb-6 border-b pb-3">
-        ✏️ Edit Data KIB Tanah
-      </h2>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-          <Input type="text" label="Kode Barang" name="kode_barang" value={form.kode_barang} onChange={handleChange} />
-          <Input type="text" label="Nama Barang" name="nama_barang" value={form.nama_barang} onChange={handleChange} />
-          <Input type="text" label="NIBAR" name="nibar" value={form.nibar} onChange={handleChange} />
-          <Input type="text" label="No Register" name="no_register" value={form.no_register} onChange={handleChange} />
-          <Input type="text" label="Spesifikasi Nama Barang" name="spesifikasi_nama_barang" value={form.spesifikasi_nama_barang} onChange={handleChange} />
-          <Input type="text" label="Spesifikasi Lainnya" name="spesifikasi_lainnya" value={form.spesifikasi_lainnya} onChange={handleChange} />
-          <Input type="text" label="Jumlah" name="jumlah" value={form.jumlah} onChange={handleChange} />
-          <Input type="text" label="satuan" name="satuan" value={form.satuan} onChange={handleChange} />
-          <Input type="text" label="lokasi" name="lokasi" value={form.lokasi} onChange={handleChange} />
-          <Input type="text" label="titik_koordinat" name="titik_koordinat" value={form.titik_koordinat} onChange={handleChange} />
-          <Input type="text" label="nama" name="nama" value={form.nama} onChange={handleChange} />
-          <Input type="text" label="nomor" name="nomor" value={form.nomor} onChange={handleChange} />
-          <Input type="date" label="tanggal" name="tanggal" value={form.tanggal} onChange={handleChange} />
-          <Input type="text" label="nama_kepemilikan" name="nama_kepemilikan" value={form.nama_kepemilikan} onChange={handleChange} />
-          <Input type="number" label="harga_satuan" name="harga_satuan" value={form.harga_satuan} onChange={handleChange} />
-          <Input type="number" label="nilai_perolehan" name="nilai_perolehan" value={form.nilai_perolehan} onChange={handleChange} />
-          <Input type="date" label="tanggal_perolehan" name="tanggal_perolehan" value={form.tanggal_perolehan} onChange={handleChange} />
-          <Input type="text" label="cara_perolehan" name="cara_perolehan" value={form.cara_perolehan} onChange={handleChange} />
-          <Input type="text" label="status_penggunaan" name="status_penggunaan" value={form.status_penggunaan} onChange={handleChange} />
-          {/* <Input type="text" label="keterangan" name="keterangan" value={form.keterangan} onChange={handleChange} /> */}
-          <TextArea label="keterangan" name="keterangan" value={form.keterangan} onChange={handleChange} />
-           
-
+   <div className="min-h-screen bg-[#FDFDFD] pb-12">
+      {/* Header Sticky - Reuse style dari sebelumnya tapi warna Amber */}
+      <header className="w-full bg-white border-b border-amber-100">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex justify-between items-center h-20">
+      
+      {/* Left Side */}
+      <div className="flex items-center gap-4">
+        <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-amber-100 text-amber-600 shadow-sm shadow-amber-100">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 18.07a4.5 4.5 0 0 1-1.897 1.13L6 20l1.995-5.385a4.5 4.5 0 0 1 1.13-1.897l8.243-8.243Z" />
+          </svg>
         </div>
-
-        <div className="flex justify-end space-x-3">
-          <Link to="/kib/tanah" className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm text-gray-700 hover:bg-gray-200">
-            Batal
-          </Link>
-
-          <button type="submit" className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
-            Update Data
-          </button>
+        <div>
+          <h2 className="text-xl font-bold text-gray-900 tracking-tight">Edit Data KIB</h2>
+          <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider">Perbarui Informasi Aset Tanah</p>
         </div>
-      </form>
-    </main>
+      </div>
+
+      {/* Right Side - Close/Cancel */}
+      <Link 
+        to="/kib/tanah" 
+        className="group p-2 rounded-full hover:bg-red-50 transition-colors duration-200"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400 group-hover:text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </Link>
+      
+    </div>
+  </div>
+</header>
+
+      <main className="max-w-5xl mx-auto p-4 sm:p-8">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          
+          {/* Section: Identitas Barang */}
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-amber-400"></div>
+            <h3 className="text-sm font-bold text-gray-800 mb-6 flex items-center gap-2">
+               <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+               Identitas & Spesifikasi
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Input label="Kode Barang" name="kode_barang" value={form.kode_barang} onChange={handleChange} />
+              <Input label="Nama Barang" name="nama_barang" value={form.nama_barang} onChange={handleChange} />
+              <Input label="NIBAR" name="nibar" value={form.nibar} onChange={handleChange} />
+              <Input label="No Register" name="no_register" value={form.no_register} onChange={handleChange} />
+              <Input label="Spesifikasi Nama" name="spesifikasi_nama_barang" value={form.spesifikasi_nama_barang} onChange={handleChange} />
+              <Input label="Spesifikasi Lainnya" name="spesifikasi_lainnya" value={form.spesifikasi_lainnya} onChange={handleChange} />
+            </div>
+          </div>
+
+          {/* Section: Lokasi & Fisik */}
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-blue-400"></div>
+            <h3 className="text-sm font-bold text-gray-800 mb-6 flex items-center gap-2">
+               <span className="w-2 h-2 rounded-full bg-blue-400"></span>
+               Lokasi & Fisik
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-4">
+                <Input label="Jumlah" name="jumlah" value={form.jumlah} onChange={handleChange} />
+                <Input label="Satuan" name="satuan" value={form.satuan} onChange={handleChange} />
+              </div>
+              <Input label="Lokasi" name="lokasi" value={form.lokasi} onChange={handleChange} />
+              <Input label="Titik Koordinat" name="titik_koordinat" value={form.titik_koordinat} onChange={handleChange} />
+              <Input label="Status Penggunaan" name="status_penggunaan" value={form.status_penggunaan} onChange={handleChange} />
+            </div>
+          </div>
+
+          {/* Section: Dokumen & Perolehan */}
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-emerald-400"></div>
+            <h3 className="text-sm font-bold text-gray-800 mb-6 flex items-center gap-2">
+               <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+               Dokumen & Nilai Aset
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+              <Input label="Nama Dokumen" name="nama" value={form.nama} onChange={handleChange} />
+              <Input label="Nomor Dokumen" name="nomor" value={form.nomor} onChange={handleChange} />
+              <Input type="date" label="Tanggal Dokumen" name="tanggal" value={form.tanggal} onChange={handleChange} />
+              <Input label="Nama Pemilik" name="nama_kepemilikan" value={form.nama_kepemilikan} onChange={handleChange} />
+              <Input type="number" label="Harga Satuan" name="harga_satuan" value={form.harga_satuan} onChange={handleChange} />
+              <Input type="number" label="Nilai Perolehan" name="nilai_perolehan" value={form.nilai_perolehan} onChange={handleChange} />
+              <Input type="date" label="Tgl Perolehan" name="tanggal_perolehan" value={form.tanggal_perolehan} onChange={handleChange} />
+              <Input label="Cara Perolehan" name="cara_perolehan" value={form.cara_perolehan} onChange={handleChange} />
+              <TextArea label="Keterangan Tambahan" name="keterangan" value={form.keterangan} onChange={handleChange} />
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-100">
+            <Link to="/kib/tanah" className="px-6 py-3 text-sm font-bold text-gray-500 hover:text-gray-700 transition-colors">
+              Batalkan
+            </Link>
+            <button 
+              type="submit" 
+              className="px-10 py-3 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-2xl shadow-lg shadow-amber-200 transition-all transform active:scale-95"
+            >
+              Update Data Aset
+            </button>
+          </div>
+        </form>
+      </main>
+    </div>
   );
 }
 
 function Input({ label, name, value, onChange, type }) {
   return (
-    <div>
-      <label className="block text-sm font-medium text-gray-700">
-        {label}
+    <div className="flex flex-col gap-1.5">
+      <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">
+        {label.replace(/_/g, ' ')}
       </label>
       <input
         type={type}
         name={name}
         value={value ?? ""}
         onChange={onChange}
-        className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
+        className="w-full px-4 py-2.5 bg-amber-50/30 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition-all text-sm text-gray-800"
       />
     </div>
   );
 }
 
-function TextArea ({label, name, onchange}) {
+function TextArea({ label, name, value, onChange }) {
   return (
-    <div>
-      <label className="block text-sm font-medium text-gray-700">
-        {label}
+    <div className="flex flex-col gap-1.5 md:col-span-2">
+      <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">
+        {label.replace(/_/g, ' ')}
       </label>
-      <textarea name={name} onChange={onchange} id="" className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"></textarea>
+      <textarea
+        name={name}
+        value={value ?? ""}
+        onChange={onChange}
+        rows="3"
+        className="w-full px-4 py-2.5 bg-amber-50/30 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition-all text-sm text-gray-800"
+      ></textarea>
     </div>
-  )
+  );
 }
 
 
