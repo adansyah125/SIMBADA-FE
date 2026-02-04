@@ -260,7 +260,92 @@ const exportExcel = () => {
                     </tbody>
                 </table>
             </div>
-              {/* Pagiination */}
+            
+            {/* CARD LIST - Mobile Optimized */}
+                <div className="md:hidden space-y-4 p-4 bg-gray-50 min-h-screen">
+                    {data.map((item, index) => (
+                        <div key={item.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                            {/* Header: Badge & Actions */}
+                            <div className="flex justify-between items-center px-4 py-3 bg-gray-50/50 border-b border-gray-100">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">#{index + 1}</span>
+                                    <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-mono font-semibold">
+                                        {item.kode_barang}
+                                    </span>
+                                </div>
+                                <div className="flex gap-1">
+                                    <Link to={`/kib/tanah/edit/${item.id}/edit`} className="p-2 text-gray-400 hover:text-amber-600 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="h-4 w-4">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 18.07a4.5 4.5 0 0 1-1.897 1.13L6 20l1.995-5.385a4.5 4.5 0 0 1 1.13-1.897l8.243-8.243Z" />
+                                        </svg>
+                                    </Link>
+                                    <button 
+                                        onClick={() =>handleDelete(item.id)} className="p-2 text-gray-400 hover:text-red-600 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="h-4 w-4">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Content Body */}
+                            <div className="p-4 space-y-5">
+                                {/* Section: Bukti Kepemilikan */}
+                                <section>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Bukti Kepemilikan</p>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="col-span-2">
+                                            <label className="block text-[10px] text-gray-500 mb-0.5">Nama Barang</label>
+                                            <p className="text-sm font-semibold text-gray-900">{item.nama_barang}</p>
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] text-gray-500 mb-0.5">Nomor</label>
+                                            <p className="text-sm font-medium text-gray-800">{item.nomor ?? '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] text-gray-500 mb-0.5">Tanggal</label>
+                                            <p className="text-sm font-medium text-gray-800">{formatTanggal(item.tanggal)}</p>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <label className="block text-[10px] text-gray-500 mb-0.5">Nama Kepemilikan</label>
+                                            <p className="text-sm font-medium text-gray-800">{item.nama_kepemilikan ?? '-'}</p>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <hr className="border-gray-50" />
+
+                                {/* Section: Perolehan */}
+                                <section>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Data Perolehan</p>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-[10px] text-gray-500 mb-0.5">Harga Satuan</label>
+                                            <p className="text-sm font-semibold text-emerald-600">Rp {formatRupiah(item.harga_satuan)}</p>
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] text-gray-500 mb-0.5">Nilai Total</label>
+                                            <p className="text-sm font-semibold text-gray-900">Rp {formatRupiah(item.nilai_perolehan)}</p>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <label className="block text-[10px] text-gray-500 mb-0.5">Tanggal Perolehan</label>
+                                            <p className="text-sm font-medium text-gray-800">{formatTanggal(item.tanggal_perolehan)}</p>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                {/* Section: Keterangan */}
+                                {item.keterangan && (
+                                    <div className="bg-gray-50 rounded-lg p-3">
+                                        <label className="block text-[10px] text-gray-500 mb-1">Keterangan</label>
+                                        <p className="text-xs text-gray-600 leading-relaxed italic">"{item.keterangan}"</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                    {/* Pagiination */}
                 <div className="flex justify-between items-center mt-4">
                         <p className="text-sm text-gray-600">
                             Halaman {currentPage} dari {lastPage} (Total {total} data)
@@ -284,46 +369,6 @@ const exportExcel = () => {
                             </button>
                         </div>
                     </div>
-
-            {/* CARD LIST - Mobile */}
-            <div className="md:hidden space-y-3">
-                        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm" >
-                            {/* Header Card */}
-                            <div className="flex justify-between items-start mb-3 pb-3 border-b border-gray-100">
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1.5">
-                                        <span className="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded font-mono">1</span>
-                                        <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-500"> user</span>
-                                    </div>
-                                    <h3 className="font-semibold text-gray-900 text-sm">syahdan</h3>
-                                </div>
-                                <div className="flex gap-2 ml-3">
-                                    <Link to={`/user/edit`} className="text-amber-600 hover:text-amber-700 p-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-5 w-5">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 18.07a4.5 4.5 0 0 1-1.897 1.13L6 20l1.995-5.385a4.5 4.5 0 0 1 1.13-1.897l8.243-8.243Z" />
-                                        </svg>
-                                    </Link>
-                                    <button className="text-red-600 hover:text-red-700 p-1" >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-5 w-5" >
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Content Card */}
-                            <div className="space-y-2 text-xs">
-                                <div className="flex items-start">
-                                    <span className="text-gray-500 w-20 flex-shrink-0">Email:</span>
-                                    <span className="text-gray-900 font-medium break-all">231</span>
-                                </div>
-                                <div className="flex items-start">
-                                    <span className="text-gray-500 w-20 flex-shrink-0">Dibuat:</span>
-                                    <span className="text-gray-900 font-medium">10 mei 2024</span>
-                                </div>
-                            </div>
-                        </div>
-            </div>
              {/* modal */}
             {showImportModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
