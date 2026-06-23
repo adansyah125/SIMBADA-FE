@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { getKirById, updateKir } from "../../services/KirService";
 import { toast } from "react-toastify";
+import { Pencil } from "lucide-react";
 
 function EditKir() {
   const { id } = useParams();
@@ -96,7 +97,7 @@ function EditKir() {
   return (
     <main className="p-8 flex-1">
       <h2 className="text-2xl font-bold text-green-700 mb-6 border-b pb-3">
-        ✏️ Edit Data KIR
+        <Pencil className="h-5 w-5 inline" /> Edit Data KIR
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-6">

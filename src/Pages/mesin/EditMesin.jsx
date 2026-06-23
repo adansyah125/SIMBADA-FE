@@ -2,6 +2,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { getMesinById, updateKibMesin } from '../../services/KibMesinService';
+import { Sprout } from "lucide-react";
 
 function EditMesin() {
     const { id } = useParams();
@@ -109,7 +110,7 @@ function EditMesin() {
           {/* FORM */}
             <main className="p-8 flex-1">
               <h2 className="text-2xl font-bold text-green-700 mb-6 border-b pb-3">
-                🌱 Tambah Data KIB
+                <Sprout className="h-5 w-5 inline" /> Tambah Data KIB
               </h2>
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* GRID FORM */}

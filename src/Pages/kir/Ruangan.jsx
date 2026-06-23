@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { ArrowLeft, Building, ChevronDown, MapPin, Package } from "lucide-react";
 
 function Ruangan() {
   const [activeLokasi, setActiveLokasi] = useState(null);
@@ -29,9 +30,7 @@ function Ruangan() {
     className="group flex items-center gap-2 text-gray-500 hover:text-indigo-600 transition-colors font-semibold text-sm"
   >
     <div className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:border-indigo-100 group-hover:bg-indigo-50 transition-all shadow-sm">
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-      </svg>
+      <ArrowLeft className="h-4 w-4" />
     </div>
     Kembali
   </Link>
@@ -41,7 +40,7 @@ function Ruangan() {
     <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
         <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-          📍 Lokasi Ruangan
+          <MapPin className="h-6 w-6 text-indigo-600" /> Lokasi Ruangan
         </h1>
         <p className="text-gray-500 mt-1 font-medium text-lg">
           Manajemen inventaris berdasarkan ruangan
@@ -84,9 +83,7 @@ function Ruangan() {
         >
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center shadow-inner">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
+              <Building className="h-6 w-6" />
             </div>
             <div>
               <h3 className="font-black text-xl text-gray-800 tracking-tight">
@@ -100,9 +97,7 @@ function Ruangan() {
           
           <div className="flex items-center gap-3">
             <span className={`transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
+              <ChevronDown className="h-6 w-6 text-gray-400" />
             </span>
           </div>
         </div>
@@ -161,7 +156,7 @@ function Ruangan() {
             </div>
             {currentLokasi.items.length === 0 && (
               <div className="py-20 text-center flex flex-col items-center gap-3">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">📦</div>
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-400"><Package className="h-8 w-8" /></div>
                 <p className="text-gray-400 font-medium">Tidak ada aset di lokasi ini</p>
               </div>
             )}

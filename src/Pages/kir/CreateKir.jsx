@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Sprout } from "lucide-react";
 
 import { createKir } from "../../services/KirService";
 import { getKibTanah } from "../../services/KibTanahService";
@@ -165,7 +166,7 @@ const toggleKib = (item) => {
   return (
     <main className="p-8 flex-1">
       <h2 className="text-2xl font-bold text-green-700 mb-6 border-b pb-3">
-        🌱 Tambah Data KIR
+        <Sprout className="h-5 w-5 inline" /> Tambah Data KIR
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-6">

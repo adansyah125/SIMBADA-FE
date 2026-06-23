@@ -2,6 +2,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { getTanahById,updateKibTanah } from "../../services/KibTanahService";
+import { Pencil, X } from "lucide-react";
 function EditTanah() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -110,9 +111,7 @@ function EditTanah() {
       {/* Left Side */}
       <div className="flex items-center gap-4">
         <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-amber-100 text-amber-600 shadow-sm shadow-amber-100">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 18.07a4.5 4.5 0 0 1-1.897 1.13L6 20l1.995-5.385a4.5 4.5 0 0 1 1.13-1.897l8.243-8.243Z" />
-          </svg>
+          <Pencil className="h-6 w-6" />
         </div>
         <div>
           <h2 className="text-xl font-bold text-gray-900 tracking-tight">Edit Data KIB</h2>
@@ -125,9 +124,7 @@ function EditTanah() {
         to="/kib/tanah" 
         className="group p-2 rounded-full hover:bg-red-50 transition-colors duration-200"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400 group-hover:text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        <X className="h-6 w-6 text-gray-400 group-hover:text-red-500" />
       </Link>
       
     </div>

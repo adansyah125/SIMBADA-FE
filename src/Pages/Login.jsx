@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { login } from "../services/authService"
 import { setAuth } from "../utils/auth"
 import { toast } from "react-toastify";
+import { Mail, Lock, ArrowRight } from "lucide-react";
 function Login() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
@@ -63,10 +64,7 @@ function Login() {
           <div>
             <label htmlFor="email" className="block text-xs font-medium text-gray-600 mb-1">Email</label>
             <div className="relative">
-              <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect width="20" height="16" x="2" y="4" rx="2"/>
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-              </svg>
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input type="text" id="email" name="email" onChange={handleChange} placeholder="admin@contoh.com" required className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 text-gray-700 focus:ring-blue-500 focus:border-blue-500" />
             </div>
           </div>
@@ -75,19 +73,12 @@ function Login() {
             <label htmlFor="password" className="block text-xs font-medium text-gray-600 mb-1">PASSWORD SISTEM</label>
             <div className="relative">
               {/* Ikon Kunci */}
-              <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input type="password"  id="password" name="password" placeholder="********" required onChange={handleChange} className="w-full pl-10 pr-10 py-3 rounded-lg border border-gray-300 text-gray-700 focus:ring-blue-500 focus:border-blue-500" />
             </div>
           </div>
           <button type="submit" disabled={loading} className="w-full py-3 flex items-center justify-center space-x-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold rounded-lg transition duration-200 shadow-md hover:shadow-lg" >
-            <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-              <polyline points="10 17 15 12 10 7"/>
-              <line x1="15" x2="3" y1="12" y2="12"/>
-            </svg>
+            <ArrowRight className="w-5 h-5" />
             <span>{loading ? "Memproses..." : "Masuk"}</span>
           </button>
         </form>

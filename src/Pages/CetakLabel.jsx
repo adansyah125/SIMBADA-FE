@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 import { useState,useEffect } from "react";
 import {getKir,cetakLabelKir} from "../services/KirService"
 import { toast } from "react-toastify";
+import { Settings } from "lucide-react";
 function CetakLabel() {
   const [kirData, setKirData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -152,7 +153,7 @@ function CetakLabel() {
         {/* ===================== PREVIEW + CETAK ===================== */}
         <div className="lg:w-96 w-full">
           <div className="w-full p-4 border border-gray-200 rounded-lg bg-gray-50">
-            <h2 className="text-base md:text-lg font-bold mb-4">⚙️ Konfigurasi Cetak</h2>
+            <h2 className="text-base md:text-lg font-bold mb-4 flex items-center gap-2"><Settings className="h-5 w-5" /> Konfigurasi Cetak</h2>
             {/* Preview Label */}
             <div className="mb-4">
              <PreviewLabelBoxStatic item={selectedKir} />

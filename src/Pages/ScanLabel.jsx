@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import {formatRupiah, formatTanggal} from "../utils/Format";
+import { Package, QrCode, MapPin, Calendar, CheckCircle, AlertTriangle, HelpCircle, Hash, Coins, ImageIcon, Loader2 } from "lucide-react";
 
 function ScanLabel() {
-      const { id } = useParams();
+  const { id } = useParams();
   const [kir, setKir] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [imgLoaded, setImgLoaded] = useState(false);
+  const [qrLoaded, setQrLoaded] = useState(false);
+  const [error, setError] = useState(false);
 
   const fetchKir = async () => {
     try {
@@ -16,167 +20,162 @@ function ScanLabel() {
       setKir(response.data.data);
     } catch (error) {
       console.error('Data Tidak ditemukan:', error);
+      setError(true);
     } finally {
       setLoading(false);
     }
   };
 
-
   useEffect(() => {
     fetchKir();
   }, []);
 
+  const kondisiIcon = (kondisi) => {
+    switch (kondisi?.toLowerCase()) {
+      case 'baik': return <CheckCircle className="h-5 w-5 text-emerald-500" />;
+      case 'rusak berat': return <AlertTriangle className="h-5 w-5 text-rose-500" />;
+      default: return <HelpCircle className="h-5 w-5 text-amber-500" />;
+    }
+  };
 
-  if (loading) 
+  const kondisiColor = (kondisi) => {
+    switch (kondisi?.toLowerCase()) {
+      case 'baik': return 'bg-emerald-50 text-emerald-700 ring-emerald-200';
+      case 'rusak berat': return 'bg-rose-50 text-rose-700 ring-rose-200';
+      default: return 'bg-amber-50 text-amber-700 ring-amber-200';
+    }
+  };
+
+  if (loading)
     return (
-     <div className="flex space-x-2 justify-center items-center h-screen">
-      <span className="sr-only">Loading...</span>
-      <div className="h-3 w-3 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-      <div className="h-3 w-3 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-      <div className="h-3 w-3 bg-blue-600 rounded-full animate-bounce"></div>
-    </div> 
-  )
-  
-  if (!kir) return <p className="p-8 text-center text-red-500">Data tidak ditemukan.</p>;
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="relative mx-auto w-16 h-16">
+            <div className="absolute inset-0 rounded-full border-4 border-slate-200" />
+            <div className="absolute inset-0 rounded-full border-4 border-slate-800 border-t-transparent animate-spin" />
+          </div>
+          <p className="text-sm font-medium text-slate-500 animate-pulse">Memuat data aset...</p>
+        </div>
+      </div>
+    );
+
+  if (error || !kir)
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8 max-w-sm w-full text-center space-y-4">
+          <div className="mx-auto w-16 h-16 rounded-full bg-rose-50 flex items-center justify-center">
+            <AlertTriangle className="h-8 w-8 text-rose-500" />
+          </div>
+          <h2 className="text-lg font-bold text-slate-800">Data Tidak Ditemukan</h2>
+          <p className="text-sm text-slate-500">Aset dengan ID ini tidak tersedia atau telah dihapus.</p>
+        </div>
+      </div>
+    );
+
+  const fields = [
+    { label: "Kode Barang", value: kir.kode_barang, icon: Hash },
+    { label: "Nama Barang", value: kir.nama_barang, icon: Package },
+    { label: "Ruangan", value: kir.lokasi, icon: MapPin },
+    { label: "Tanggal Perolehan", value: formatTanggal(kir.tanggal_perolehan), icon: Calendar },
+    { label: "Jumlah", value: `${kir.jumlah} Unit`, icon: Package },
+    { label: "Nilai Perolehan", value: `Rp ${formatRupiah(kir.nilai_perolehan)}`, icon: Coins },
+  ];
 
   return (
-     <div className="min-h-screen bg-gray-100 p-4 flex justify-center">
-      <div className="bg-white rounded-xl shadow-md w-full max-w-2xl p-6 md:p-8">
-        {/* Header */}
-        {/* <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center text-gray-800">
-          Detail KIR
-        </h1> */}
-        
-        {/* Gambar Barang */}
-        <div className="flex justify-center">
-          {kir.gambar ? (
-            <img
-              src={`${import.meta.env.VITE_API_URL_IMAGE}/storage/${kir.gambar}`}
-              alt="Gambar Barang"
-              className="w-full max-w-sm rounded-lg shadow border"
-            />
-          ) : (
-            <div className="w-full max-w-sm h-40 border border-dashed border-gray-400 rounded-lg flex items-center justify-center text-gray-500">
-              Tidak ada gambar barang
-            </div>
-          )}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-6 flex justify-center items-start md:items-center">
+      <div className="w-full max-w-lg space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        {/* HEADER CARD */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 text-center">
+          <div className="relative mx-auto mb-4 w-20 h-20">
+            <div className="absolute inset-0 bg-slate-800/5 rounded-full" />
+            {kir.gambar_qr ? (
+              <img
+                src={`${import.meta.env.VITE_API_URL_IMAGE}/storage/${kir.gambar_qr}`}
+                alt="QR Code"
+                onLoad={() => setQrLoaded(true)}
+                className={`w-20 h-20 mx-auto relative transition-all duration-500 ${qrLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}
+              />
+            ) : (
+              <div className="w-20 h-20 mx-auto relative rounded-full bg-slate-100 flex items-center justify-center">
+                <QrCode className="h-10 w-10 text-slate-400" />
+              </div>
+            )}
+            {!qrLoaded && kir.gambar_qr && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Loader2 className="h-6 w-6 text-slate-400 animate-spin" />
+              </div>
+            )}
+          </div>
+          <h1 className="text-xl font-bold text-slate-900">{kir.nama_barang}</h1>
+          <p className="text-sm text-slate-500 mt-1">{kir.lokasi}</p>
+          <div className="flex items-center justify-center gap-2 mt-3">
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ring-1 ${kondisiColor(kir.kondisi)}`}>
+              {kondisiIcon(kir.kondisi)}
+              {kir.kondisi}
+            </span>
+          </div>
         </div>
 
-        {/* Data Detail */}
-        <section className="px-6 py-16 md:py-20">
-    <div className="mx-auto max-w-4xl">
-      <div className="text-center mb-12 md:mb-10">
-        {/* <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-neutral-800 dark:text-neutral-800 mb-3 md:mb-4">
-          Rincian Ruangan {kir.lokasi}
-        </h2> */}
-        <p className="text-base md:text-lg text-neutral-600 dark:text-neutral-400">
-          Detail Inventaris Barang {kir.nama_barang} dari Ruangan {kir.lokasi}
+        {/* DETAIL FIELDS */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 divide-y divide-slate-100 overflow-hidden">
+          {fields.map((field, idx) => (
+            <div key={idx} className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50 transition-colors" style={{ animationDelay: `${idx * 60}ms` }}>
+              <div className="h-9 w-9 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                <field.icon className="h-4 w-4 text-slate-500" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{field.label}</p>
+                <p className="text-sm font-semibold text-slate-800 truncate">{field.value || '-'}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* GAMBAR BARANG */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <ImageIcon className="h-4 w-4 text-slate-400" />
+            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Gambar Barang</p>
+          </div>
+          <div className="flex justify-center">
+            {kir.gambar ? (
+              <div className="relative">
+                {!imgLoaded && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-slate-50 rounded-xl">
+                    <Loader2 className="h-8 w-8 text-slate-300 animate-spin" />
+                  </div>
+                )}
+                <img
+                  src={`${import.meta.env.VITE_API_URL_IMAGE}/storage/${kir.gambar}`}
+                  alt="Gambar Barang"
+                  onLoad={() => setImgLoaded(true)}
+                  className={`w-full max-w-xs rounded-xl border border-slate-200 transition-all duration-500 ${imgLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
+                />
+              </div>
+            ) : (
+              <div className="w-full max-w-xs h-44 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-2 text-slate-400">
+                <ImageIcon className="h-8 w-8" />
+                <span className="text-sm font-medium">Tidak ada gambar</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* KETERANGAN */}
+        {kir.keterangan && (
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Keterangan</p>
+            <p className="text-sm text-slate-600 leading-relaxed">{kir.keterangan}</p>
+          </div>
+        )}
+
+        {/* FOOTER */}
+        <p className="text-center text-[10px] text-slate-400 font-medium pb-2">
+          SIMBADA Bandung Kidul — Sistem Informasi Manajemen Barang Daerah
         </p>
       </div>
-
-      <dl className="divide-y divide-neutral-200 dark:divide-neutral-800">
-        <div className="py-5 md:py-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
-          <dt className="text-base md:text-lg font-semibold text-neutral-900 dark:text-neutral-900">
-            Nama Barang
-          </dt>
-          <dd className="text-base md:text-lg text-neutral-700 dark:text-neutral-500">
-           {kir.nama_barang}
-          </dd>
-        </div>
-
-        <div className="py-5 md:py-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
-          <dt className="text-base md:text-lg font-semibold text-neutral-900 dark:text-neutral-900">
-             Kode
-          </dt>
-          <dd className="text-base md:text-lg text-neutral-700 dark:text-neutral-500">
-            {kir.kode_barang}
-          </dd>
-        </div>
-
-        <div className="py-5 md:py-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
-          <dt className="text-base md:text-lg font-semibold text-neutral-900 dark:text-neutral-900">
-            Ruangan
-          </dt>
-          <dd className="text-base md:text-lg text-neutral-700 dark:text-neutral-500">
-            {kir.lokasi}
-          </dd>
-        </div>
-
-        <div className="py-5 md:py-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
-          <dt className="text-base md:text-lg font-semibold text-neutral-900 dark:text-neutral-900">
-            Tanggal
-          </dt>
-          <dd className="text-base md:text-lg text-neutral-700 dark:text-neutral-500">
-            {formatTanggal(kir.tanggal_perolehan)}
-          </dd>
-        </div>
-        <div className="py-5 md:py-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
-          <dt className="text-base md:text-lg font-semibold text-neutral-900 dark:text-neutral-900">
-            Kondisi
-          </dt>
-          <dd className="text-base md:text-lg text-neutral-700 dark:text-neutral-500">
-            {kir.kondisi}
-          </dd>
-        </div>
-        <div className="py-5 md:py-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
-          <dt className="text-base md:text-lg font-semibold text-neutral-900 dark:text-neutral-900">
-            jumlah
-          </dt>
-          <dd className="text-base md:text-lg text-neutral-700 dark:text-neutral-500">
-            {kir.jumlah}
-          </dd>
-        </div>
-        <div className="py-5 md:py-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
-          <dt className="text-base md:text-lg font-semibold text-neutral-900 dark:text-neutral-900">
-            nilai_perolehan
-          </dt>
-          <dd className="text-base md:text-lg text-neutral-700 dark:text-neutral-500">
-           Rp. {formatRupiah(kir.nilai_perolehan)}
-          </dd>
-        </div>
-      </dl>
     </div>
-    {/* QR Code */}
-        <div className=" text-center">
-          <h2 className="text-lg font-semibold mb-2">QR Code</h2>
-
-          {kir.gambar_qr ? (
-            <img
-              src={`${import.meta.env.VITE_API_URL_IMAGE}/storage/${kir.gambar_qr}`}
-              alt="QR Code"
-              className="w-32 h-32 mx-auto  shadow"
-            />
-          ) : (
-            <div className="w-32 h-32 mx-auto border border-dashed border-gray-400 rounded flex items-center justify-center text-gray-500">
-              QR
-            </div>
-          )}
-        </div>
-        {/* Keterangan */}
-        {/* <div className="mt-6 text-center">
-          <strong className="block mb-1">Keterangan:</strong>
-          <p className="text-gray-700 bg-gray-50 p-3 rounded-lg ">
-            {kir.keterangan || '-'}
-          </p>
-        </div> */}
-        </section>
-
-        
-
-        
-
-        {/* Tombol Kembali */}
-        {/* <div className="mt-8 text-center">
-          <Link
-            to="/laporan-kir"
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-          >
-            Kembali ke Laporan
-          </Link>
-        </div> */}
-      </div>
-    </div>
-  )
+  );
 }
 
 export default ScanLabel

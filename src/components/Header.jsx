@@ -1,4 +1,5 @@
 // import { useLocation } from "react-router-dom";
+import { Menu } from "lucide-react";
 
 export default function Header({ toggleSidebar }) {
   // const location = useLocation();
@@ -18,7 +19,7 @@ export default function Header({ toggleSidebar }) {
           onClick={toggleSidebar}
           className=" p-2 rounded-lg hover:bg-gray-100 cursor-pointer"
         >
-          ☰
+          <Menu className="h-5 w-5" />
         </button>
         <h1 className="font-semibold text-gray-700 text-md uppercase ">
           {/* {titleMap[location.pathname] || "Dashboard"} */}

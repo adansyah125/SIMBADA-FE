@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getGedungById, updateKibGedung } from '../../services/KibGedungService';
 import { toast } from 'react-toastify';
+import { Pencil } from "lucide-react";
 
 function EditGedung() {
   const {id} = useParams();
@@ -98,7 +99,7 @@ function EditGedung() {
   return (
     <main className="p-8 flex-1">
       <h2 className="text-2xl font-bold text-yellow-600 mb-6 border-b pb-3">
-        ✏️ Edit Data KIB Tanah
+        <Pencil className="h-5 w-5 inline" /> Edit Data KIB
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-6">

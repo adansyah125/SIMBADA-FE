@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { createKibTanah } from "../../services/KibTanahService";
 import { toast } from "react-toastify";
+import { Plus, X } from "lucide-react";
 
 function CreateTanah() {
     const navigate = useNavigate();
@@ -63,9 +64,7 @@ function CreateTanah() {
       {/* Left Side: Title & Subtitle */}
       <div className="flex items-center gap-4">
         <div className="hidden sm:flex h-12 w-12 items-center justify-center rounded-2xl bg-green-50 text-green-600">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
+          <Plus className="h-6 w-6" />
         </div>
         <div>
           <h2 className="text-xl font-extrabold text-gray-900 tracking-tight">
@@ -88,9 +87,7 @@ function CreateTanah() {
         >
           <span className="hidden sm:block text-sm font-semibold">Batalkan</span>
           <div className="h-8 w-8 flex items-center justify-center rounded-lg bg-white shadow-sm group-hover:shadow-none transition-all border border-gray-100 group-hover:border-red-100">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X className="h-5 w-5" />
           </div>
         </Link>
       </div>
