@@ -24,18 +24,19 @@ const menuGroups = [
     items: [
       { to: "/laporan", icon: BookOpen, label: "Laporan" },
       { to: "/berita", icon: Bookmark, label: "Berita Acara" },
-      { to: "/integritas", icon: FileText, label: "Pakta Integritas" },
+      { to: "/integritas", icon: FileText, label: "Rekapitulasi Aset" },
     ],
   },
 ];
 
-export default function Sidebar({ sidebarRef, backdropRef, toggleSidebar }) {
+export default function Sidebar({ sidebarOpen, toggleSidebar }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [kibOpen, setKibOpen] = useState(false);
 
   const isKibActive = location.pathname.startsWith("/kib/");
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (isKibActive) setKibOpen(true);
   }, [isKibActive]);
 
@@ -43,7 +44,6 @@ export default function Sidebar({ sidebarRef, backdropRef, toggleSidebar }) {
     try {
       await logout();
       localStorage.removeItem("token");
-      toast.success("Berhasil logout");
       navigate("/");
     } catch (err) {
       console.log(err)
@@ -64,24 +64,8 @@ export default function Sidebar({ sidebarRef, backdropRef, toggleSidebar }) {
        : "text-gray-400 hover:text-white hover:pl-4 before:bg-gray-500"}`;
 
   return (
-    <>
-      <div
-        ref={backdropRef}
-        onClick={toggleSidebar}
-        className="fixed inset-0 bg-black/50 z-30 hidden animate-in fade-in duration-300"
-      />
-
-      <aside
-        ref={sidebarRef}
-        className="
-          bg-[#12154c] text-white w-60 h-full
-          flex flex-col
-          py-5 px-3 shadow-2xl shadow-black/20
-          fixed inset-y-0 left-0 z-40
-          -translate-x-full
-          transition-transform duration-300 ease-out
-        "
-      >
+    <aside className={`transition-all duration-300 ease-out overflow-hidden shrink-0 border-r border-white/10 ${sidebarOpen ? 'w-60' : 'w-0'}`}>
+      <div className="w-60 h-full flex flex-col py-5 px-3 bg-[#12154c] text-white">
         {/* HEADER */}
         <div className="flex items-center justify-between mb-6 px-2">
           <div className="flex items-center gap-3">
@@ -119,9 +103,9 @@ export default function Sidebar({ sidebarRef, backdropRef, toggleSidebar }) {
             <div className={`grid transition-all duration-300 ease-in-out ${kibOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
               <div className="overflow-hidden">
                 <div className="ml-4 pl-3 border-l-2 border-white/10 mt-1 space-y-0.5 py-1">
-                  <NavLink to="/kib/tanah" onClick={toggleSidebar} className={subLink}>Data Tanah</NavLink>
-                  <NavLink to="/kib/gedung" onClick={toggleSidebar} className={subLink}>Data Gedung</NavLink>
-                  <NavLink to="/kib/mesin" onClick={toggleSidebar} className={subLink}>Data Mesin</NavLink>
+                  <NavLink to="/kib/tanah" className={subLink}>Data Tanah</NavLink>
+                  <NavLink to="/kib/gedung" className={subLink}>Data Gedung</NavLink>
+                  <NavLink to="/kib/mesin" className={subLink}>Data Mesin</NavLink>
                 </div>
               </div>
             </div>
@@ -133,7 +117,7 @@ export default function Sidebar({ sidebarRef, backdropRef, toggleSidebar }) {
               <p className="text-[10px] font-bold text-indigo-300/60 uppercase tracking-[0.15em] px-3 mb-1.5">{group.label}</p>
               <div className="space-y-0.5">
                 {group.items.map((item) => (
-                  <NavLink key={item.to} to={item.to} onClick={toggleSidebar} className={baseLink} end>
+                  <NavLink key={item.to} to={item.to} className={baseLink} end>
                     {({ isActive }) => (
                       <>
                         {isActive && <span className="absolute inset-0 bg-white rounded-xl shadow-sm" />}
@@ -154,10 +138,10 @@ export default function Sidebar({ sidebarRef, backdropRef, toggleSidebar }) {
         <div className="pt-4 mt-2 border-t border-white/10">
           <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-rose-300 hover:text-white hover:bg-rose-500/20 transition-all duration-200 group cursor-pointer">
             <LogOut className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-            Keluar Sistem
+            Keluar
           </button>
         </div>
-      </aside>
-    </>
+      </div>
+    </aside>
   );
 }

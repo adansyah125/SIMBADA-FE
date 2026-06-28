@@ -1,11 +1,18 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { getTanahById,updateKibTanah } from "../../services/KibTanahService";
-import { Pencil, X } from "lucide-react";
+import { getTanahById, updateKibTanah } from "../../services/KibTanahService";
+import { ArrowLeft, Save, Loader2 } from "lucide-react";
+import { Input, TextArea, FormCard, LoadingSpinner } from "../../components/FormComponents";
+
+// =====================================================
+// Halaman Edit KIB Tanah
+// =====================================================
 function EditTanah() {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     kode_barang: "",
     nama_barang: "",
@@ -13,55 +20,53 @@ function EditTanah() {
     no_register: "",
     spesifikasi_nama_barang: "",
     spesifikasi_lainnya: "",
-    jumlah:"",
+    jumlah: "",
     satuan: "",
     lokasi: "",
     titik_koordinat: "",
-    nama:"",
-    nomor:"",
-    tanggal:"",
-    nama_kepemilikan:"",
+    nama: "",
+    nomor: "",
+    tanggal: "",
+    nama_kepemilikan: "",
     harga_satuan: "",
-    nilai_perolehan:"",
+    nilai_perolehan: "",
     tanggal_perolehan: "",
-    cara_perolehan:"",
-    status_penggunaan:"",
-    keterangan:"",
+    cara_perolehan: "",
+    status_penggunaan: "",
+    keterangan: "",
   });
 
-  const [loading, setLoading] = useState(true);
-
-  // 🔹 Ambil data lama
+  // Ambil data lama dari backend
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getTanahById(id);
+        const res = await getTanahById(id);
+        const data = res.data;
         setForm({
-        kode_barang: response.data?.kode_barang ?? "",
-        nama_barang: response.data?.nama_barang ?? "",
-        nibar: response.data?.nibar ?? "",
-        no_register: response.data?.no_register ?? "",
-        spesifikasi_nama_barang: response.data?.spesifikasi_nama_barang ?? "",
-        spesifikasi_lainnya: response.data?.spesifikasi_lainnya ?? "",
-        jumlah: response.data?.jumlah ?? "",
-        satuan: response.data?.satuan ?? "",
-        lokasi: response.data?.lokasi ?? "",
-        titik_koordinat: response.data?.titik_koordinat ?? "",
-        nama: response.data?.nama ?? "",
-        nomor: response.data?.nomor ?? "",
-        tanggal: response.data?.tanggal ?? "",
-        nama_kepemilikan: response.data?.nama_kepemilikan ?? "",
-        harga_satuan: response.data?.harga_satuan ?? "",
-        nilai_perolehan: response.data?.nilai_perolehan ?? "",
-        tanggal_perolehan: response.data?.tanggal_perolehan ?? "",
-        cara_perolehan: response.data?.cara_perolehan ?? "",
-        status_penggunaan: response.data?.status_penggunaan ?? "",
-        keterangan: response.data?.keterangan ?? "",
-        
-      });
+          kode_barang: data?.kode_barang ?? "",
+          nama_barang: data?.nama_barang ?? "",
+          nibar: data?.nibar ?? "",
+          no_register: data?.no_register ?? "",
+          spesifikasi_nama_barang: data?.spesifikasi_nama_barang ?? "",
+          spesifikasi_lainnya: data?.spesifikasi_lainnya ?? "",
+          jumlah: data?.jumlah ?? "",
+          satuan: data?.satuan ?? "",
+          lokasi: data?.lokasi ?? "",
+          titik_koordinat: data?.titik_koordinat ?? "",
+          nama: data?.nama ?? "",
+          nomor: data?.nomor ?? "",
+          tanggal: data?.tanggal ?? "",
+          nama_kepemilikan: data?.nama_kepemilikan ?? "",
+          harga_satuan: data?.harga_satuan ?? "",
+          nilai_perolehan: data?.nilai_perolehan ?? "",
+          tanggal_perolehan: data?.tanggal_perolehan ?? "",
+          cara_perolehan: data?.cara_perolehan ?? "",
+          status_penggunaan: data?.status_penggunaan ?? "",
+          keterangan: data?.keterangan ?? "",
+        });
       } catch (error) {
         console.log(error);
-        toast.error("Gagal mengambil data");
+        toast.error("Gagal mengambil data tanah");
       } finally {
         setLoading(false);
       }
@@ -70,176 +75,113 @@ function EditTanah() {
     fetchData();
   }, [id]);
 
+  // Update state saat user mengetik
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // Kirim data yang sudah diubah ke backend
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       await updateKibTanah(id, form);
-      toast.success("Data KIB Tanah berhasil diperbarui");
+      toast.success("Berhasil Memperbarui");
       navigate("/kib/tanah");
     } catch (error) {
       console.log(error);
-      toast.error("Gagal memperbarui data");
+      toast.error("Gagal memperbarui");
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex space-x-2 justify-center items-center h-screen">
-      <span className="sr-only">Loading...</span>
-      <div className="h-3 w-3 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-      <div className="h-3 w-3 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-      <div className="h-3 w-3 bg-blue-600 rounded-full animate-bounce"></div>
-    </div>   
-    )
-  }
+  // Tampilkan loading selama pengambilan data
+  if (loading) return <LoadingSpinner />;
 
   return (
-   <div className="min-h-screen bg-[#FDFDFD] pb-12">
-      {/* Header Sticky - Reuse style dari sebelumnya tapi warna Amber */}
-      <header className="w-full bg-white border-b border-amber-100">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="flex justify-between items-center h-20">
-      
-      {/* Left Side */}
-      <div className="flex items-center gap-4">
-        <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-amber-100 text-amber-600 shadow-sm shadow-amber-100">
-          <Pencil className="h-6 w-6" />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 tracking-tight">Edit Data KIB</h2>
-          <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider">Perbarui Informasi Aset Tanah</p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="mx-auto max-w-4xl px-4">
 
-      {/* Right Side - Close/Cancel */}
-      <Link 
-        to="/kib/tanah" 
-        className="group p-2 rounded-full hover:bg-red-50 transition-colors duration-200"
-      >
-        <X className="h-6 w-6 text-gray-400 group-hover:text-red-500" />
-      </Link>
-      
-    </div>
-  </div>
-</header>
-
-      <main className="max-w-5xl mx-auto p-4 sm:p-8">
-        <form onSubmit={handleSubmit} className="space-y-8">
-          
-          {/* Section: Identitas Barang */}
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-1 h-full bg-amber-400"></div>
-            <h3 className="text-sm font-bold text-gray-800 mb-6 flex items-center gap-2">
-               <span className="w-2 h-2 rounded-full bg-amber-400"></span>
-               Identitas & Spesifikasi
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Input label="Kode Barang" name="kode_barang" value={form.kode_barang} onChange={handleChange} />
-              <Input label="Nama Barang" name="nama_barang" value={form.nama_barang} onChange={handleChange} />
-              <Input label="NIBAR" name="nibar" value={form.nibar} onChange={handleChange} />
-              <Input label="No Register" name="no_register" value={form.no_register} onChange={handleChange} />
-              <Input label="Spesifikasi Nama" name="spesifikasi_nama_barang" value={form.spesifikasi_nama_barang} onChange={handleChange} />
-              <Input label="Spesifikasi Lainnya" name="spesifikasi_lainnya" value={form.spesifikasi_lainnya} onChange={handleChange} />
-            </div>
+        {/* ——— Header halaman ——— */}
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Edit Data KIB Tanah</h1>
+            <p className="mt-1 text-sm text-gray-500">
+              Perbarui informasi aset tanah yang sudah ada
+            </p>
           </div>
+          <Link
+            to="/kib/tanah"
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Kembali
+          </Link>
+        </div>
 
-          {/* Section: Lokasi & Fisik */}
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-1 h-full bg-blue-400"></div>
-            <h3 className="text-sm font-bold text-gray-800 mb-6 flex items-center gap-2">
-               <span className="w-2 h-2 rounded-full bg-blue-400"></span>
-               Lokasi & Fisik
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="grid grid-cols-2 gap-4">
-                <Input label="Jumlah" name="jumlah" value={form.jumlah} onChange={handleChange} />
-                <Input label="Satuan" name="satuan" value={form.satuan} onChange={handleChange} />
-              </div>
-              <Input label="Lokasi" name="lokasi" value={form.lokasi} onChange={handleChange} />
-              <Input label="Titik Koordinat" name="titik_koordinat" value={form.titik_koordinat} onChange={handleChange} />
-              <Input label="Status Penggunaan" name="status_penggunaan" value={form.status_penggunaan} onChange={handleChange} />
-            </div>
-          </div>
+        {/* ——— Form ——— */}
+        <form onSubmit={handleSubmit} className="space-y-6">
 
-          {/* Section: Dokumen & Perolehan */}
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-1 h-full bg-emerald-400"></div>
-            <h3 className="text-sm font-bold text-gray-800 mb-6 flex items-center gap-2">
-               <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-               Dokumen & Nilai Aset
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-              <Input label="Nama Dokumen" name="nama" value={form.nama} onChange={handleChange} />
-              <Input label="Nomor Dokumen" name="nomor" value={form.nomor} onChange={handleChange} />
-              <Input type="date" label="Tanggal Dokumen" name="tanggal" value={form.tanggal} onChange={handleChange} />
-              <Input label="Nama Pemilik" name="nama_kepemilikan" value={form.nama_kepemilikan} onChange={handleChange} />
-              <Input type="number" label="Harga Satuan" name="harga_satuan" value={form.harga_satuan} onChange={handleChange} />
-              <Input type="number" label="Nilai Perolehan" name="nilai_perolehan" value={form.nilai_perolehan} onChange={handleChange} />
-              <Input type="date" label="Tgl Perolehan" name="tanggal_perolehan" value={form.tanggal_perolehan} onChange={handleChange} />
+          {/* 1. Informasi Utama Barang */}
+          <FormCard title="Informasi Utama Barang">
+            <Input label="Kode Barang" name="kode_barang" value={form.kode_barang} onChange={handleChange} />
+            <Input label="Nama Barang" name="nama_barang" value={form.nama_barang} onChange={handleChange} />
+            <Input label="NIBAR" name="nibar" value={form.nibar} onChange={handleChange} />
+            <Input label="No Register" name="no_register" value={form.no_register} onChange={handleChange} />
+            <Input label="Spesifikasi Nama Barang" name="spesifikasi_nama_barang" value={form.spesifikasi_nama_barang} onChange={handleChange} />
+            <Input label="Spesifikasi Lainnya" name="spesifikasi_lainnya" value={form.spesifikasi_lainnya} onChange={handleChange} />
+          </FormCard>
+
+          {/* 2. Fisik & Lokasi */}
+          <FormCard title="Fisik & Lokasi">
+            <Input label="Jumlah" name="jumlah" value={form.jumlah} onChange={handleChange} />
+            <Input label="Satuan" name="satuan" value={form.satuan} onChange={handleChange} />
+            <Input label="Lokasi" name="lokasi" value={form.lokasi} onChange={handleChange} />
+            <Input label="Titik Koordinat" name="titik_koordinat" value={form.titik_koordinat} onChange={handleChange} />
+            <Input label="Status Penggunaan" name="status_penggunaan" value={form.status_penggunaan} onChange={handleChange} />
+          </FormCard>
+
+          {/* 3. Bukti Kepemilikan */}
+          <FormCard title="Bukti Kepemilikan">
+            <Input label="Nama Dokumen" name="nama" value={form.nama} onChange={handleChange} />
+            <Input label="Nomor Dokumen" name="nomor" value={form.nomor} onChange={handleChange} />
+            <Input label="Tanggal Dokumen" name="tanggal" type="date" value={form.tanggal} onChange={handleChange} />
+            <Input label="Nama Pemilik" name="nama_kepemilikan" value={form.nama_kepemilikan} onChange={handleChange} />
+          </FormCard>
+
+          {/* 4. Nilai & Cara Perolehan */}
+          <FormCard title="Nilai & Cara Perolehan">
+            <Input label="Harga Satuan" name="harga_satuan" type="number" value={form.harga_satuan} onChange={handleChange} />
+            <Input label="Nilai Perolehan" name="nilai_perolehan" type="number" value={form.nilai_perolehan} onChange={handleChange} />
+            <Input label="Tanggal Perolehan" name="tanggal_perolehan" type="date" value={form.tanggal_perolehan} onChange={handleChange} />
+            <div className="sm:col-span-2 lg:col-span-3">
               <Input label="Cara Perolehan" name="cara_perolehan" value={form.cara_perolehan} onChange={handleChange} />
-              <TextArea label="Keterangan Tambahan" name="keterangan" value={form.keterangan} onChange={handleChange} />
             </div>
-          </div>
+            <div className="sm:col-span-2 lg:col-span-3">
+              <TextArea label="Keterangan" name="keterangan" value={form.keterangan} onChange={handleChange} />
+            </div>
+          </FormCard>
 
-          {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-100">
-            <Link to="/kib/tanah" className="px-6 py-3 text-sm font-bold text-gray-500 hover:text-gray-700 transition-colors">
-              Batalkan
-            </Link>
-            <button 
-              type="submit" 
-              className="px-10 py-3 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-2xl shadow-lg shadow-amber-200 transition-all transform active:scale-95"
+          {/* ——— Tombol aksi ——— */}
+          <div className="flex items-center justify-end gap-3 pt-4">
+            <Link
+              to="/kib/tanah"
+              className="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             >
-              Update Data Aset
+              Batal
+            </Link>
+            <button
+              type="submit"
+              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+            >
+              <Save className="h-4 w-4" />
+              Simpan Perubahan
             </button>
           </div>
+
         </form>
-      </main>
+      </div>
     </div>
   );
 }
-
-function Input({ label, name, value, onChange, type }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">
-        {label.replace(/_/g, ' ')}
-      </label>
-      <input
-        type={type}
-        name={name}
-        value={value ?? ""}
-        onChange={onChange}
-        className="w-full px-4 py-2.5 bg-amber-50/30 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition-all text-sm text-gray-800"
-      />
-    </div>
-  );
-}
-
-function TextArea({ label, name, value, onChange }) {
-  return (
-    <div className="flex flex-col gap-1.5 md:col-span-2">
-      <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">
-        {label.replace(/_/g, ' ')}
-      </label>
-      <textarea
-        name={name}
-        value={value ?? ""}
-        onChange={onChange}
-        rows="3"
-        className="w-full px-4 py-2.5 bg-amber-50/30 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition-all text-sm text-gray-800"
-      ></textarea>
-    </div>
-  );
-}
-
 
 export default EditTanah;

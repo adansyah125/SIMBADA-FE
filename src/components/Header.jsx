@@ -1,15 +1,6 @@
-// import { useLocation } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { PanelLeft } from "lucide-react";
 
-export default function Header({ toggleSidebar }) {
-  // const location = useLocation();
-
-  // const titleMap = {
-  //   "/": "Dashboard",
-  //   "/kib/tanah": "Data Tanah",
-  //   "/kib/gedung": "Data Gedung",
-  //   "/kib/mesin": "Data Mesin",
-  // };
+export default function Header({ sidebarOpen, toggleSidebar }) {
 
   return (
     <header className="bg-white px-6 py-4 flex justify-between items-center
@@ -17,9 +8,10 @@ export default function Header({ toggleSidebar }) {
       <div className="flex items-center gap-4">
         <button
           onClick={toggleSidebar}
-          className=" p-2 rounded-lg hover:bg-gray-100 cursor-pointer"
+          className="h-9 w-9 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center cursor-pointer"
+          aria-label={sidebarOpen ? "Tutup sidebar" : "Buka sidebar"}
         >
-          <Menu className="h-5 w-5" />
+          <PanelLeft className={`h-5 w-5 text-gray-700 transition-all duration-200 ${sidebarOpen ? 'opacity-60' : ''}`} />
         </button>
         <h1 className="font-semibold text-gray-700 text-md uppercase ">
           {/* {titleMap[location.pathname] || "Dashboard"} */}

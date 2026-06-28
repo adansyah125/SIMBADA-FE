@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { useRef } from "react";
+import { useState } from "react";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 
@@ -35,13 +35,8 @@ import Integritas from "./Pages/Informasi/Integritas";
 import Berita from "./Pages/Informasi/Berita";
 
 export default function App() {
-  const sidebarRef = useRef(null);
-  const backdropRef = useRef(null);
-
-  const toggleSidebar = () => {
-    sidebarRef.current.classList.toggle("-translate-x-full");
-    backdropRef.current.classList.toggle("hidden");
-  };
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const toggleSidebar = () => setSidebarOpen(prev => !prev);
 
   return (
     <BrowserRouter>
@@ -57,15 +52,14 @@ export default function App() {
         {/* ===== PROTECTED ===== */}
         <Route element={<ProtectedRoute />}>
           <Route path="/*" element={
-              <div className="h-screen overflow-hidden">
+              <div className="flex h-screen overflow-hidden">
                 <Sidebar
-                  sidebarRef={sidebarRef}
-                  backdropRef={backdropRef}
+                  sidebarOpen={sidebarOpen}
                   toggleSidebar={toggleSidebar}
                 />
 
-                <div className="flex flex-col h-full">
-                  <Header toggleSidebar={toggleSidebar} />
+                <div className="flex flex-col flex-1 min-w-0">
+                  <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
 
                   <main className="p-6 flex-1 bg-gray-50 overflow-auto">
                     <Routes>
