@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/static-components */
 import { Link } from 'react-router-dom'
 import { useState } from 'react';
 import { useEffect } from 'react';
@@ -36,7 +37,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 
   return (
    <>
-    <div className="w-full text-gray-800 antialiased max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+    <div className="w-full text-gray-800 antialiased max-w-7xl mx-auto p-4 sm:p-6 lg:p-4">
     {/* --- 1. HEADER COMPACT --- */}
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 mb-8 border-b border-gray-100 pb-5">
         <div>

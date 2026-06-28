@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Sprout } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
+import { Input, Select, FormCard } from "../../components/FormComponents";
 
 import { createKir } from "../../services/KirService";
 import { getKibTanah } from "../../services/KibTanahService";
 import { getAllKibMesin } from "../../services/KibMesinService";
 import { getKibGedung } from "../../services/KibGedungService";
 
+// =====================================================
+// Halaman Create KIR
+// =====================================================
 function CreateKir() {
   const navigate = useNavigate();
 
@@ -15,32 +19,9 @@ function CreateKir() {
   const [kibList, setKibList] = useState([]);
   const [selectedKib, setSelectedKib] = useState([]);
   const [search, setSearch] = useState("");
-
   const [previewImage, setPreviewImage] = useState(null);
-      const [fileError, setFileError] = useState("");
-  
-      const handleFileChange = (file) => {
-          const maxSize = 5120 * 1024;
-  
-          if(file) {
-              if (file.size > maxSize) {
-                  setFileError("Gambar terlalu besar, maksimal 5MB");
-                  // reset
-                  setForm({...form, gambar:null});
-                  setPreviewImage(null);
-                  document.getElementById("fileUpload").value = "";
-                  return;
-              }
-  
-              // jika lolos validasi, hapus pesan error
-              setFileError("");
-              setForm({...form, gambar: file});
-  
-              // Bersihkan memori URL lama jika ada
-              if (previewImage) URL.revokeObjectURL(previewImage);
-              setPreviewImage(URL.createObjectURL(file));
-          }
-      }
+  const [fileError, setFileError] = useState("");
+  const [errors, setErrors] = useState({});
 
   const [form, setForm] = useState({
     kondisi: "",
@@ -48,7 +29,7 @@ function CreateKir() {
     jumlah: "",
     nilai_perolehan: "",
     tanggal_perolehan: "",
-    gambar:null,
+    gambar: null,
   });
 
   // ===============================
@@ -58,321 +39,369 @@ function CreateKir() {
     if (!jenisKib) return;
 
     const fetchKib = async () => {
-  try {
-    let res;
+      try {
+        let res;
+        if (jenisKib === "tanah") res = await getKibTanah();
+        if (jenisKib === "mesin") res = await getAllKibMesin();
+        if (jenisKib === "gedung") res = await getKibGedung();
 
-    if (jenisKib === "tanah") res = await getKibTanah();
-    if (jenisKib === "mesin") res = await getAllKibMesin();
-    if (jenisKib === "gedung") res = await getKibGedung();
-
-    const data = res.data?.data ?? res.data ?? [];
-      setKibList(Array.isArray(data) ? data : []);
-  } catch (err) {
-    console.log(err);
-    toast.error("Gagal memuat data KIB");
-  }
-};
-
+        const data = res.data?.data ?? res.data ?? [];
+        setKibList(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.log(err);
+        toast.error("Gagal memuat data KIB");
+      }
+    };
 
     fetchKib();
   }, [jenisKib]);
+
+  // ===============================
+  // VALIDASI
+  // ===============================
+  const requiredFields = ["kondisi", "lokasi", "jumlah", "nilai_perolehan", "tanggal_perolehan"];
+
+  const validate = () => {
+    const newErrors = {};
+    requiredFields.forEach((field) => {
+      if (!form[field]?.toString().trim()) {
+        newErrors[field] = "Field ini wajib diisi";
+      }
+    });
+    if (selectedKib.length === 0) {
+      toast.warning("Pilih minimal satu KIB");
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0 && selectedKib.length > 0;
+  };
+
+  // ===============================
+  // FILE HANDLER
+  // ===============================
+  const handleFileChange = (file) => {
+    const maxSize = 5120 * 1024;
+
+    if (file) {
+      if (file.size > maxSize) {
+        setFileError("Gambar terlalu besar, maksimal 5MB");
+        setForm({ ...form, gambar: null });
+        setPreviewImage(null);
+        return;
+      }
+      setFileError("");
+      setForm({ ...form, gambar: file });
+      if (previewImage) URL.revokeObjectURL(previewImage);
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  };
+
+  // ===============================
+  // HANDLE CHANGE
+  // ===============================
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  // ===============================
+  // SEARCH & FILTER KIB
+  // ===============================
+  const keyword = search.trim().toLowerCase();
+
+  const displayedKib = keyword
+    ? kibList.filter(
+        (item) =>
+          String(item.nama_barang).toLowerCase().includes(keyword) ||
+          String(item.kode_barang).toLowerCase().includes(keyword) ||
+          String(item.merk || "").toLowerCase().includes(keyword) ||
+          String(item.no_polisi || "").toLowerCase().includes(keyword) ||
+          String(item.no_rangka || "").toLowerCase().includes(keyword) ||
+          String(item.no_bpkb || "").toLowerCase().includes(keyword)
+      )
+    : kibList.slice(0, 5);
+
+  const highlightText = (text, keyword) => {
+    if (!keyword) return text;
+    const regex = new RegExp(`(${keyword})`, "gi");
+    return text.split(regex).map((part, i) =>
+      part.toLowerCase() === keyword.toLowerCase() ? (
+        <span key={i} className="bg-yellow-200 text-yellow-900 font-semibold px-1 rounded">
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
+  };
+
+  const toggleKib = (item) => {
+    setSelectedKib((prev) => {
+      const exists = prev.find((k) => k.id === item.id);
+      if (exists) return prev.filter((k) => k.id !== item.id);
+      return [...prev, item];
+    });
+  };
 
   // ===============================
   // SUBMIT
   // ===============================
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (selectedKib.length === 0) {
-  toast.warning("Pilih minimal satu KIB");
-  return;
-}
+    if (!validate()) return;
 
     try {
-  for (const item of selectedKib) {
-    const payload = {
-      lokasi: form.lokasi,
-      kondisi: form.kondisi,
-      jumlah: form.jumlah,
-      nilai_perolehan: form.nilai_perolehan,
-      tanggal_perolehan: form.tanggal_perolehan,
-      gambar: form.gambar,
-      nama_barang: item.nama_barang,
-      kode_barang: item.kode_barang,
-    };
+      for (const item of selectedKib) {
+        const payload = {
+          lokasi: form.lokasi,
+          kondisi: form.kondisi,
+          jumlah: form.jumlah,
+          nilai_perolehan: form.nilai_perolehan,
+          tanggal_perolehan: form.tanggal_perolehan,
+          gambar: form.gambar,
+          nama_barang: item.nama_barang,
+          kode_barang: item.kode_barang,
+        };
 
-    if (jenisKib === "tanah") payload.tanah_id = item.id;
-    if (jenisKib === "mesin") payload.mesin_id = item.id;
-    if (jenisKib === "gedung") payload.gedung_id = item.id;
+        if (jenisKib === "tanah") payload.tanah_id = item.id;
+        if (jenisKib === "mesin") payload.mesin_id = item.id;
+        if (jenisKib === "gedung") payload.gedung_id = item.id;
 
-    await createKir(payload);
-  }
+        await createKir(payload);
+      }
 
-  toast.success("Semua data KIR berhasil disimpan");
-  navigate("/kir");
-} catch (err) {
-  console.log(err);
-  toast.error("Sebagian / semua data gagal disimpan");
-}
-
+      toast.success("Semua data KIR berhasil disimpan");
+      navigate("/kir");
+    } catch (err) {
+      console.log(err);
+      toast.error("Sebagian / semua data gagal disimpan");
+    }
   };
 
-  const keyword = search.trim().toLowerCase();
-
-const displayedKib = keyword
-  ? kibList.filter(item =>
-      String(item.nama_barang).toLowerCase().includes(keyword) ||
-      String(item.kode_barang).toLowerCase().includes(keyword) ||
-      String(item.merk).toLowerCase().includes(keyword) ||
-      String(item.no_polisi).toLowerCase().includes(keyword) ||
-      String(item.no_rangka).toLowerCase().includes(keyword) ||
-      String(item.no_bpkb).toLowerCase().includes(keyword)
-    )
-  : kibList.slice(0, 5);
-
-  const highlightText = (text, keyword) => {
-  if (!keyword) return text;
-
-  const regex = new RegExp(`(${keyword})`, "gi");
-  return text.split(regex).map((part, i) =>
-    part.toLowerCase() === keyword.toLowerCase() ? (
-      <span
-        key={i}
-        className="bg-yellow-200 text-yellow-900 font-semibold px-1 rounded"
-      >
-        {part}
-      </span>
-    ) : (
-      part
-    )
-  );
-};
-
-const toggleKib = (item) => {
-  setSelectedKib((prev) => {
-    const exists = prev.find(k => k.id === item.id);
-
-    if (exists) {
-      // hapus kalau sudah dipilih
-      return prev.filter(k => k.id !== item.id);
-    } else {
-      // tambah kalau belum
-      return [...prev, item];
-    }
-  });
-};
-
-
+  // ===============================
+  // RENDER
+  // ===============================
   return (
-    <main className="p-8 flex-1">
-      <h2 className="text-2xl font-bold text-green-700 mb-6 border-b pb-3">
-        <Sprout className="h-5 w-5 inline" /> Tambah Data KIR
-      </h2>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="mx-auto max-w-4xl px-4">
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-          {/* JENIS KIB */}
+        {/* HEADER */}
+        <div className="mb-8 flex items-center justify-between">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Pilih Jenis KIB</label>
-            <select
-              className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
+            <h1 className="text-2xl font-bold text-gray-900">Tambah Data KIR</h1>
+            <p className="mt-1 text-sm text-gray-500">
+              Pilih KIB dan isi data untuk membuat Kartu Inventaris Ruangan
+            </p>
+          </div>
+          <Link
+            to="/kir"
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Kembali
+          </Link>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+
+          {/* BARIS 1: Jenis KIB + Kondisi */}
+          <FormCard>
+            <Select
+              label="Pilih Jenis KIB"
+              name="jenisKib"
               value={jenisKib}
               onChange={(e) => {
                 setJenisKib(e.target.value);
                 setSelectedKib([]);
                 setKibList([]);
               }}
-            >
-              <option value="">-- pilih --</option>
-              <option value="tanah">Tanah</option>
-              <option value="mesin">Mesin</option>
-              <option value="gedung">Gedung</option>
-            </select>
-          </div>
-
-          {/* KONDISI */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Kondisi</label>
-            <select className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
+              options={[
+                { value: "tanah", label: "Tanah" },
+                { value: "mesin", label: "Mesin" },
+                { value: "gedung", label: "Gedung" },
+              ]}
+              placeholder="-- pilih jenis KIB --"
+            />
+            <Select
+              label="Kondisi"
+              name="kondisi"
               value={form.kondisi}
-              onChange={(e) => setForm({ ...form, kondisi: e.target.value })}>
-              <option value="" disabled>-- Pilih Kondisi --</option>
-              <option value="baik">Baik</option>
-              <option value="kurang baik">Kurang Baik</option>
-              <option value="rusak berat">Rusak Berat</option>
-            </select>
-          </div>
-  
-          {/* LIST KIB */}
-          {displayedKib.length >= 0 && (
-            <div className="md:col-span-2  rounded-md shadow-md p-3 bg-gray-50">
-              <label className="block text-sm font-medium text-gray-700 mb-2"> Pilih KIB
+              onChange={handleChange}
+              required
+              error={errors.kondisi}
+              options={[
+                { value: "baik", label: "Baik" },
+                { value: "kurang baik", label: "Kurang Baik" },
+                { value: "rusak berat", label: "Rusak Berat" },
+              ]}
+              placeholder="-- Pilih Kondisi --"
+            />
+          </FormCard>
+
+          {/* PILIH KIB */}
+          <div className="rounded-lg border border-gray-200 bg-white p-6">
+            <div className="space-y-1.5 mb-4">
+              <label className="text-sm font-medium text-gray-700">
+                Pilih Barang KIB
+                <span className="ml-0.5 text-red-500">*</span>
               </label>
-               <div className="mb-3">
-                <input type="text" placeholder="Cari nama / kode barang..." className="w-full shadow-sm rounded-md p-2 text-sm"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}/>
-                </div>
-              
-             {displayedKib.map((item) => (
-  <div
-    key={item.id}
-    className={`flex gap-2 p-2 border rounded-md bg-white mb-2
-      ${selectedKib.some(k => k.id === item.id)
-        ? "border-green-500 bg-green-50"
-        : "border-gray-400"}
-    `}
-  >
-    <input
-      type="checkbox"
-      checked={selectedKib.some(k => k.id === item.id)}
-      onChange={() => toggleKib(item)}
-    />
-
-    <div className="flex-1">
-      <p className="font-medium">
-        {highlightText(item.nama_barang, search)}
-      </p>
-      <p className="text-xs text-gray-600">
-        Kode: <b>{highlightText(item.kode_barang, search)}</b>
-      </p>
-    </div>
-  </div>
-))}
-
-               {search && displayedKib.length === 0 && (
-  <p className="text-sm text-gray-500 text-center">
-    Data tidak ditemukan
-  </p>
-)}
-
+              <input
+                type="text"
+                placeholder="Cari nama / kode barang..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm
+                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
             </div>
-          )}
 
-          {/* LOKASI */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Lokasi</label>
-            <select
-              className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300 bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              value={form.lokasi || ''} // Menggunakan || '' untuk mencegah error 'uncontrolled input'
-              onChange={(e) => setForm({ ...form, lokasi: e.target.value })}
-            >
-              <option value="" disabled>Pilih Lokasi</option>
-              <option value="Sekretariat Camat">Sekretariat Camat</option>
-              <option value="Kasi Pemerintah">Kasi Pemerintah</option>
-              <option value="Kasi Pemberdayaan Masyarakat">Kasi Pemberdayaan Masyarakat</option>
-              <option value="Ruang Comend Center">Ruang Comend Center</option>
-              <option value="Kasubag Umum Kepegawaian data informasi">Kasubag Umum Kepegawaian data informasi</option>
-              <option value="Kasi ketentraman dan ketertiban">Kasi ketentraman dan ketertiban</option>
-              <option value="Kasubag program dan keuanganr">Kasubag program dan keuangan</option>
-              <option value="Ruang Pelayanan">Ruang Pelayanan</option>
-              <option value="Ruang Tengah">Ruang Tengah</option>
-              <option value="Ruang arsip">Ruang arsip</option>
-              <option value="Ruang ibu menyusui">Ruang ibu menyusui</option>
-              <option value="Kasi ekonomi dan pembangunan">Kasi ekonomi dan pembangunan</option>
-              <option value="Ruang Aula">Ruang Aula</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Tanggal</label>
-            <input
-            type="date"
-              className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
-              value={form.tanggal_perolehan}
-              onChange={(e) => setForm({ ...form, tanggal_perolehan: e.target.value })}
-            />
-          </div>
-
-           {/* GAMBAR */}
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Gambar</label>
-
-                <div
-                  className="border-2 border-dashed border-gray-400 rounded-lg p-4 cursor-pointer 
-                            hover:border-blue-500 transition text-center"
-                  onClick={() => document.getElementById("fileUpload").click()}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    const file = e.dataTransfer.files[0];
-                    if (file) {
-                      setForm({ ...form, gambar: file });
-                      setPreviewImage(URL.createObjectURL(file));
-                    }
-                  }}
+            <div className="space-y-2">
+              {displayedKib.map((item) => (
+                <label
+                  key={item.id}
+                  className={`flex items-start gap-3 rounded-lg border p-3 cursor-pointer transition-colors
+                    ${selectedKib.some((k) => k.id === item.id) ? "border-green-500 bg-green-50" : "border-gray-200 hover:bg-gray-50"}`}
                 >
-                  {previewImage ? (
-                    <img
-                      src={previewImage}
-                      alt="Preview"
-                      className="mx-auto h-40 object-cover rounded-md"
-                    />
-                  ) : (
-                    <div className="text-gray-500">
-                      <p className="font-medium">Choose Image or Drag & Drop</p>
-                      <p className="text-sm">PNG, JPG, JPEG</p>
-                    </div>
-                  )}
-              </div>
-              {fileError && (
-                <p className="text-red-500 text-xs mt-1">{fileError}</p>
-                )}
-                <input
-                  id="fileUpload"
-                  type="file"
-                  name="gambar"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    setForm({ ...form, gambar: file });
-                    setPreviewImage(URL.createObjectURL(file));
-                    handleFileChange(file);
-                  }}
-                  
-                />
-              </div>
+                  <input
+                    type="checkbox"
+                    checked={selectedKib.some((k) => k.id === item.id)}
+                    onChange={() => toggleKib(item)}
+                    className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">
+                      {highlightText(item.nama_barang, search)}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Kode: <span className="font-semibold">{highlightText(item.kode_barang, search)}</span>
+                    </p>
+                  </div>
+                </label>
+              ))}
 
-                  {/* JUMLAH & NILAI */}
-          <div className="flex gap-2 items-center">
-          <div className="">
-             <label className="block text-sm font-medium text-gray-700">jumlah</label>
+              {search && displayedKib.length === 0 && (
+                <p className="text-sm text-gray-500 text-center py-4">Data tidak ditemukan</p>
+              )}
+            </div>
+          </div>
+
+          {/* BARIS 2: Lokasi + Tanggal */}
+          <FormCard>
+            <Select
+              label="Lokasi"
+              name="lokasi"
+              value={form.lokasi}
+              onChange={handleChange}
+              required
+              error={errors.lokasi}
+              options={[
+                { value: "Sekretariat Camat", label: "Sekretariat Camat" },
+                { value: "Kasi Pemerintah", label: "Kasi Pemerintah" },
+                { value: "Kasi Pemberdayaan Masyarakat", label: "Kasi Pemberdayaan Masyarakat" },
+                { value: "Ruang Comend Center", label: "Ruang Comend Center" },
+                { value: "Kasubag Umum Kepegawaian data informasi", label: "Kasubag Umum Kepegawaian data informasi" },
+                { value: "Kasi ketentraman dan ketertiban", label: "Kasi ketentraman dan ketertiban" },
+                { value: "Kasubag program dan keuangan", label: "Kasubag program dan keuangan" },
+                { value: "Ruang Pelayanan", label: "Ruang Pelayanan" },
+                { value: "Ruang Tengah", label: "Ruang Tengah" },
+                { value: "Ruang arsip", label: "Ruang arsip" },
+                { value: "Ruang ibu menyusui", label: "Ruang ibu menyusui" },
+                { value: "Kasi ekonomi dan pembangunan", label: "Kasi ekonomi dan pembangunan" },
+                { value: "Ruang Aula", label: "Ruang Aula" },
+              ]}
+              placeholder="Pilih Lokasi"
+            />
+            <Input
+              label="Tanggal Perolehan"
+              name="tanggal_perolehan"
+              type="date"
+              value={form.tanggal_perolehan}
+              onChange={handleChange}
+              required
+              error={errors.tanggal_perolehan}
+            />
+          </FormCard>
+
+          {/* GAMBAR */}
+          <div className="rounded-lg border border-gray-200 bg-white p-6">
+            <label className="block text-sm font-medium text-gray-700 mb-3">Gambar</label>
+            <div
+              className="border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer
+                         hover:border-blue-500 transition-colors text-center"
+              onClick={() => document.getElementById("fileUpload").click()}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                const file = e.dataTransfer.files[0];
+                if (file) handleFileChange(file);
+              }}
+            >
+              {previewImage ? (
+                <img src={previewImage} alt="Preview" className="mx-auto h-40 object-cover rounded-md" />
+              ) : (
+                <div className="text-gray-400">
+                  <p className="font-medium">Klik atau drag & drop gambar</p>
+                  <p className="text-sm mt-1">PNG, JPG, JPEG — maks 5MB</p>
+                </div>
+              )}
+            </div>
+            {fileError && <p className="text-xs text-red-500 mt-2">{fileError}</p>}
             <input
+              id="fileUpload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) handleFileChange(file);
+              }}
+            />
+          </div>
+
+          {/* BARIS 3: Jumlah + Nilai Perolehan */}
+          <FormCard>
+            <Input
+              label="Jumlah"
+              name="jumlah"
               type="number"
-              placeholder="Jumlah"
-              className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
               value={form.jumlah}
-              onChange={(e) => setForm({ ...form, jumlah: e.target.value })}
+              onChange={handleChange}
+              required
+              error={errors.jumlah}
             />
-            
-          </div>
-          <div>
-             <label className="block text-sm font-medium text-gray-700">Nilai Perolehan</label>
-            <input
+            <Input
+              label="Nilai Perolehan"
+              name="nilai_perolehan"
               type="number"
-              placeholder="Nilai Perolehan"
-              className="mt-1 block w-full border rounded-md shadow-sm p-2 border-gray-300"
               value={form.nilai_perolehan}
-              onChange={(e) =>
-                setForm({ ...form, nilai_perolehan: e.target.value })
-              }
+              onChange={handleChange}
+              required
+              error={errors.nilai_perolehan}
             />
-          </div>
-          </div>
-          
-        </div>
-        {/* BUTTON */}
-          <div className="flex gap-3 justify-end">
-            <Link to="/kir" className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm text-gray-700 hover:bg-gray-200">
-              Kembali
+          </FormCard>
+
+          {/* TOMBOL AKSI */}
+          <div className="flex items-center justify-end gap-3 pt-4">
+            <Link
+              to="/kir"
+              className="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              Batal
             </Link>
-            <button className="px-4 py-2 bg-green-600 text-white rounded-md">
+            <button
+              type="submit"
+              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+            >
+              <Save className="h-4 w-4" />
               Simpan Data
             </button>
           </div>
-      </form>
-    </main>
+
+        </form>
+      </div>
+    </div>
   );
 }
 

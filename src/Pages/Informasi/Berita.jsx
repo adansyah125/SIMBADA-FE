@@ -5,6 +5,7 @@ import { getAllKibMesin } from "../../services/KibMesinService"
 import {getBerita, createBerita, deleteBerita} from "../../services/BeritaService"
 import axios from "axios"
 import { FileText, Download, Trash2, Search, Newspaper, Plus, X, ClipboardList, Users } from "lucide-react";
+import AlertDialog from "../../components/ui/AlertDialog";
 
 function Berita() {
   const [data, setData] = useState([]);
@@ -91,7 +92,7 @@ function Berita() {
     try {
       await createBerita(form);
 
-      toast.success("Data berhasil ditambahkan");
+      toast.success("Berhasil Menambahkan");
 
       fetchData();
 
@@ -111,7 +112,7 @@ function Berita() {
 
     } catch (err) {
       console.log(err);
-      toast.error("Gagal menyimpan data");
+      toast.error("Gagal Menambahkan");
     }
   };
 
@@ -154,21 +155,27 @@ function Berita() {
     };
   }, []);
 
-  const handleDelete = async (id) => {
-    const confirm = window.confirm("Yakin ingin menghapus data ini?");
+  const [deleteId, setDeleteId] = useState(null);
 
-    if (!confirm) return;
+  const handleDelete = (id) => {
+    setDeleteId(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteId) return;
 
     try {
-      await deleteBerita(id);
+      await deleteBerita(deleteId);
 
-      toast.success("Data berhasil dihapus");
+      toast.success("Berhasil Menghapus");
 
-      setData((prev) => prev.filter((item) => item.id !== id));
+      setData((prev) => prev.filter((item) => item.id !== deleteId));
 
     } catch (error) {
       console.log(error);
-      toast.error("Gagal menghapus data");
+      toast.error("Gagal menghapus");
+    } finally {
+      setDeleteId(null);
     }
   }
 
@@ -209,7 +216,7 @@ function Berita() {
           <div>
             <h1 className="text-xl font-bold text-slate-800 flex items-center gap-2">
               <Newspaper className="h-5 w-5 text-blue-600" />
-              Berita Acara
+              Berita Acara Serah Terima (BAST)
             </h1>
             <p className="text-xs text-slate-400 mt-0.5">
               {data.length > 0 ? `${data.length} dokumen tercatat` : 'Kelola dokumen berita acara'}
@@ -531,6 +538,18 @@ function Berita() {
             </div>
           </div>
         )}
+
+        {/* ——— DELETE CONFIRMATION ——— */}
+        <AlertDialog
+          open={deleteId !== null}
+          onClose={() => setDeleteId(null)}
+          onConfirm={confirmDelete}
+          title="Hapus Berita Acara"
+          description="Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan."
+          confirmText="Ya, Hapus"
+          cancelText="Batal"
+          variant="danger"
+        />
 
         <style>{`
           @keyframes cardIn {

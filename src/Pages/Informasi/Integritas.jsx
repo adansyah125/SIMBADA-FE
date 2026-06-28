@@ -5,6 +5,7 @@ import { getAllKibMesin } from "../../services/KibMesinService"
 import { createIntegritas, deleteIntegritas, getIntegritas } from "../../services/IntegritasService"
 import axios from "axios"
 import { FileText, Download, Trash2, Search, Plus, X, UserCheck, ClipboardList, Users } from "lucide-react";
+import AlertDialog from "../../components/ui/AlertDialog";
 
 function Integritas() {
   const [data, setData] = useState([]);
@@ -85,7 +86,7 @@ function Integritas() {
   try {
     await createIntegritas(form);
 
-    toast.success("Data berhasil ditambahkan");
+    toast.success("Berhasil Menambahkan");
 
     fetchData();
 
@@ -102,7 +103,7 @@ function Integritas() {
 
   } catch (err) {
     console.log(err);
-    toast.error("Gagal menyimpan data");
+    toast.error("Gagal Menambahkan");
   }
 };
 
@@ -145,21 +146,27 @@ useEffect(() => {
   };
 }, []);
 
-const handleDelete = async (id) => {
-  const confirm = window.confirm("Yakin ingin menghapus data ini?");
+const [deleteId, setDeleteId] = useState(null);
 
-  if (!confirm) return;
+const handleDelete = (id) => {
+  setDeleteId(id);
+};
+
+const confirmDelete = async () => {
+  if (!deleteId) return;
 
   try {
-    await deleteIntegritas(id);
+    await deleteIntegritas(deleteId);
 
-    toast.success("Data berhasil dihapus");
+    toast.success("Berhasil Menghapus");
 
-    setData((prev) => prev.filter((item) => item.id !== id));
+    setData((prev) => prev.filter((item) => item.id !== deleteId));
 
   } catch (error) {
     console.log(error);
-    toast.error("Gagal menghapus data");
+    toast.error("Gagal menghapus");
+  } finally {
+    setDeleteId(null);
   }
 };
 
@@ -202,7 +209,7 @@ const downloadPdf = async (id) => {
           <div>
             <h1 className="text-xl font-bold text-slate-800 flex items-center gap-2">
               <UserCheck className="h-5 w-5 text-blue-600" />
-              Pakta Integritas
+              Rekapitulasi Aset
             </h1>
             <p className="text-xs text-slate-400 mt-0.5">
               {data.length > 0 ? `${data.length} dokumen tercatat` : 'Kelola dokumen pakta integritas'}
@@ -246,16 +253,16 @@ const downloadPdf = async (id) => {
             <div className="h-20 w-20 rounded-full bg-blue-50 flex items-center justify-center mb-5 animate-pulse">
               <ClipboardList className="h-10 w-10 text-blue-300" />
             </div>
-            <h3 className="text-base font-semibold text-slate-600 mb-1">Belum ada pakta integritas</h3>
+            <h3 className="text-base font-semibold text-slate-600 mb-1">Belum ada rekapitulasi aset</h3>
             <p className="text-sm text-slate-400 mb-6 text-center max-w-xs">
-              Buat dokumen pakta integritas pertama Anda untuk mencatat pernyataan komitmen.
+              Buat dokumen rekapitulasi aset pertama Anda untuk mencatat informasi aset.
             </p>
             <button
               onClick={() => setIsModalOpen(true)}
               className="flex items-center gap-1.5 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 active:scale-95 transition-all shadow-sm"
             >
               <Plus className="h-4 w-4" />
-              Buat Pakta Integritas
+              Buat Rekapitulasi Aset
             </button>
           </div>
         ) : (
@@ -346,7 +353,7 @@ const downloadPdf = async (id) => {
           <div className="fixed inset-0 bg-black/40 animate-in fade-in duration-200" onClick={() => setIsModalOpen(false)}></div>
           <div className="relative z-10 w-full max-w-lg rounded-xl border border-slate-200 bg-white p-6 shadow-xl animate-in zoom-in-95 duration-200">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-slate-800">Buat Pakta Integritas</h2>
+              <h2 className="text-lg font-semibold text-slate-800">Buat Rekapitulasi Aset</h2>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
@@ -439,6 +446,18 @@ const downloadPdf = async (id) => {
           </div>
         </div>
       )}
+
+      {/* ——— DELETE CONFIRMATION ——— */}
+      <AlertDialog
+        open={deleteId !== null}
+        onClose={() => setDeleteId(null)}
+        onConfirm={confirmDelete}
+        title="Hapus Rekapitulasi Aset"
+        description="Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan."
+        confirmText="Ya, Hapus"
+        cancelText="Batal"
+        variant="danger"
+      />
 
       <style>{`
         @keyframes cardIn {

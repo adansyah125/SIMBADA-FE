@@ -23,7 +23,7 @@ function Login() {
       const res = await login(form);
       setAuth(res.token, res.user);
       navigate("/dashboard");
-      toast.success("Login berhasil");
+      // toast.success("Login berhasil");
     } catch (err) {
       setError(
         err.response?.data?.errors?.email?.[0] ||
@@ -32,7 +32,7 @@ function Login() {
       );
       console.log(err);
       navigate("/");
-      toast.success("Login gagal");
+      toast.error("Login gagal");
     } finally {
       setLoading(false);
     }
